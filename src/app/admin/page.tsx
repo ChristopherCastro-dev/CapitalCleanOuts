@@ -93,36 +93,30 @@ function AdminDashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [jobs, setJobs] = useState<Job[]>([]);
 
-  // Load data from localStorage on mount
+  // Load from localStorage and listen to events
   useEffect(() => {
-    setMessages(JSON.parse(localStorage.getItem('messages') || '[]'));
-    setJobs(JSON.parse(localStorage.getItem('jobs') || '[]'));
-  }, []);
-
-  // Persist data to localStorage on change
-  useEffect(() => {
-    localStorage.setItem('messages', JSON.stringify(messages));
-  }, [messages]);
-
-  useEffect(() => {
-    localStorage.setItem('jobs', JSON.stringify(jobs));
-  }, [jobs]);
-
-  // Auto-refresh dashboard if storage changes (from other pages)
-  useEffect(() => {
-    const handleStorageUpdate = () => {
+    const loadData = () => {
       setMessages(JSON.parse(localStorage.getItem('messages') || '[]'));
       setJobs(JSON.parse(localStorage.getItem('jobs') || '[]'));
     };
 
-    window.addEventListener('messages-updated', handleStorageUpdate);
-    window.addEventListener('jobs-updated', handleStorageUpdate);
-    
+    loadData();
+
+    window.addEventListener('messages-updated', loadData);
+    window.addEventListener('jobs-updated', loadData);
+    window.addEventListener('storage', loadData); // For multi-tab
+
     return () => {
-      window.removeEventListener('messages-updated', handleStorageUpdate);
-      window.removeEventListener('jobs-updated', handleStorageUpdate);
+      window.removeEventListener('messages-updated', loadData);
+      window.removeEventListener('jobs-updated', loadData);
+      window.removeEventListener('storage', loadData);
     };
   }, []);
+
+  // Persist data to localStorage on change
+  useEffect(() => { localStorage.setItem('messages', JSON.stringify(messages)); }, [messages]);
+  useEffect(() => { localStorage.setItem('jobs', JSON.stringify(jobs)); }, [jobs]);
+
 
   const customers = useMemo<Customer[]>(() => {
     const customerMap = new Map<string, Customer>();
