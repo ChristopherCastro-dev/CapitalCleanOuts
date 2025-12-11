@@ -1,7 +1,7 @@
 "use client";
 
 import { useFormContext } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -57,6 +57,9 @@ export default function BookingForm() {
 
         const updatedJobs = [newJob, ...existingJobs];
         localStorage.setItem('jobs', JSON.stringify(updatedJobs));
+
+        // Dispatch custom event
+        window.dispatchEvent(new Event('jobs-updated'));
 
         toast({
           title: "Success!",

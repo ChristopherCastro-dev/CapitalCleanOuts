@@ -49,13 +49,16 @@ export default function ContactForm() {
       const newMessage = {
         id: `msg_${Date.now()}`,
         ...data,
-        phone: '', // The new dashboard schema has a phone field.
+        phone: '', // Add empty phone to match dashboard data structure
         timestamp: Date.now(),
         read: false
       };
       
       const updatedMessages = [newMessage, ...existingMessages];
       localStorage.setItem('messages', JSON.stringify(updatedMessages));
+
+      // Dispatch custom event
+      window.dispatchEvent(new Event('messages-updated'));
       
       toast({
         title: "Success!",

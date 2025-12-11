@@ -110,16 +110,18 @@ function AdminDashboard() {
 
   // Auto-refresh dashboard if storage changes (from other pages)
   useEffect(() => {
-    const handleStorage = (event: StorageEvent) => {
-        if (event.key === 'messages' && event.newValue) {
-            setMessages(JSON.parse(event.newValue));
-        }
-        if (event.key === 'jobs' && event.newValue) {
-            setJobs(JSON.parse(event.newValue));
-        }
+    const handleStorageUpdate = () => {
+      setMessages(JSON.parse(localStorage.getItem('messages') || '[]'));
+      setJobs(JSON.parse(localStorage.getItem('jobs') || '[]'));
     };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+
+    window.addEventListener('messages-updated', handleStorageUpdate);
+    window.addEventListener('jobs-updated', handleStorageUpdate);
+    
+    return () => {
+      window.removeEventListener('messages-updated', handleStorageUpdate);
+      window.removeEventListener('jobs-updated', handleStorageUpdate);
+    };
   }, []);
 
   const customers = useMemo<Customer[]>(() => {
