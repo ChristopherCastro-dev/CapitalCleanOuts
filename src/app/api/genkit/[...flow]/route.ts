@@ -1,3 +1,4 @@
-import {run} from '@genkit-ai/next';
+import { defineNextjsHandler } from '@genkit-ai/next';
+import '@/ai/flows/faq-chatbot';
 
-export {run as POST};
+export const POST = defineNextjsHandler();
