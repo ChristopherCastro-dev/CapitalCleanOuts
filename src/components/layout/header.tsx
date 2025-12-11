@@ -50,7 +50,7 @@ export default function Header() {
     } else {
        clickTimer.current = setTimeout(() => {
         clickCount.current = 0;
-      }, 400); 
+      }, 300); 
     }
   };
 
