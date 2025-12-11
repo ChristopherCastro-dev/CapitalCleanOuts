@@ -1,9 +1,9 @@
-
 'use client';
 import { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import Image from 'next/image';
 
 type Message = { id:string, name:string, email:string, phone:string, message:string, timestamp:number, read:boolean };
 type Job = { id:string, clientName:string, clientPhone:string, address:string, status:'Pending'|'In Progress'|'Completed', date:string, timestamp:number, photo?: string };
