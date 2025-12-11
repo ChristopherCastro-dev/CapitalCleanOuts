@@ -8,6 +8,7 @@ import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { truckSizes } from "@/lib/constants";
 import { Upload } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function BookingPage() {
   const [clientName, setClientName] = useState('');
@@ -16,6 +17,7 @@ export default function BookingPage() {
   const [date, setDate] = useState('');
   const [photo, setPhoto] = useState<string | undefined>();
   const [junkVolumeIndex, setJunkVolumeIndex] = useState(1); // Default to 1/4 load
+  const [status, setStatus] = useState<'Pending'|'In Progress'|'Completed'>('Pending');
 
   const selectedSize = truckSizes[junkVolumeIndex];
 
@@ -39,7 +41,7 @@ export default function BookingPage() {
       clientName,
       clientPhone,
       address,
-      status: 'Pending',
+      status,
       date,
       junkVolume: selectedSize.label,
       price: selectedSize.price,
@@ -59,6 +61,7 @@ export default function BookingPage() {
     setDate('');
     setPhoto(undefined);
     setJunkVolumeIndex(1);
+    setStatus('Pending');
 
     alert('Booking submitted!');
   };
