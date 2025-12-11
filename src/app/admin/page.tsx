@@ -74,8 +74,19 @@ function AdminDashboard(){
     }
   },[]);
 
-  useEffect(() => { localStorage.setItem('messages', JSON.stringify(messages)); }, [messages]);
-  useEffect(() => { localStorage.setItem('jobs', JSON.stringify(jobs)); }, [jobs]);
+  // Persist state changes back to localStorage
+  useEffect(() => { 
+    // Only write to localStorage if messages state is not empty, to avoid overwriting on initial mount
+    if (messages.length > 0) {
+      localStorage.setItem('messages', JSON.stringify(messages)); 
+    }
+  }, [messages]);
+
+  useEffect(() => { 
+    if (jobs.length > 0) {
+      localStorage.setItem('jobs', JSON.stringify(jobs)); 
+    }
+  }, [jobs]);
 
   const customers = useMemo<Customer[]>(() => {
     const customerMap = new Map<string, Customer>();
@@ -239,5 +250,4 @@ function StatsSection({ jobs }: { jobs: Job[] }) {
       </div>
     );
 }
-
     

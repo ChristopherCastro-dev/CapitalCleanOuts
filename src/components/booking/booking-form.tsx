@@ -53,7 +53,7 @@ export default function BookingForm() {
           status: 'Pending',
           date: data.pickupTime ? format(data.pickupTime, "yyyy-MM-dd") : new Date().toISOString().split('T')[0],
           junkVolume: data.junkVolume,
-          price: form.getValues('price'), // Assuming price is managed in the form state
+          price: form.getValues('price'),
           photo: photoDataUrl,
           timestamp: Date.now(),
         };
