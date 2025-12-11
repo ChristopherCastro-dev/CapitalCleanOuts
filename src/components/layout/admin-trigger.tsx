@@ -1,30 +1,20 @@
 
 'use client';
 
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { PasswordModal } from './password-modal';
 
 export function AdminTrigger() {
-  const router = useRouter();
-
-  const handleAdminAccess = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // Prevent any underlying elements from being triggered
-    event.preventDefault();
-    event.stopPropagation();
-    
-    const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || '1234';
-    const input = prompt('Enter admin password:');
-    if (input === ADMIN_PASSWORD) {
-      router.push('/admin');
-    } else if (input !== null && input !== "") {
-      alert('Incorrect password.');
-    }
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <button
-      onDoubleClick={handleAdminAccess}
-      className="absolute inset-0 z-10 h-full w-full bg-transparent"
-      aria-label="Open Admin Login"
-    />
+    <>
+      <button
+        onDoubleClick={() => setIsModalOpen(true)}
+        className="absolute inset-0 z-10 h-full w-full bg-transparent"
+        aria-label="Open Admin Login"
+      />
+      <PasswordModal isOpen={isModalOpen} onOpenChange={setIsModalOpen} />
+    </>
   );
 }
