@@ -1,3 +1,5 @@
+"use client";
+
 import { BookingPageClient } from "@/components/booking/booking-page-client";
 
 export default function BookingPage() {
