@@ -39,8 +39,8 @@ export const customerReviews = [
 
 export const contactDetails = {
     phones: [
-      { number: "1-786-205-7298", display: "(786) 205-7298", owner: "Alex Martinez" },
-      { number: "1-786-387-1153", display: "(786) 387-1153", owner: "Maria Rodriguez" },
+      { number: "1-786-205-7298", display: "(786) 205-7298", owner: "Jonathan Brena" },
+      { number: "1-786-387-1153", display: "(786) 387-1153", owner: "Jonathan Mora" },
     ],
     email: "contact@junkxpress.com",
     hours: [
