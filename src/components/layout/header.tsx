@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Truck } from "lucide-react";
@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 
 export default function Header() {
   const pathname = usePathname();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -22,6 +23,16 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleAdminAccess = () => {
+    const ADMIN_PASSWORD = process.env.NEXT_PUBLIC_ADMIN_PASSWORD || '1234';
+    const input = prompt("Enter admin password:");
+    if (input === ADMIN_PASSWORD) {
+      router.push('/admin');
+    } else if (input !== null) {
+      alert("Incorrect password.");
+    }
+  };
 
   return (
     <>
@@ -35,6 +46,11 @@ export default function Header() {
               <Truck className="h-7 w-7 text-primary" />
               <span>JUNKXPRESS</span>
             </Link>
+            <button
+              onClick={handleAdminAccess}
+              className="absolute inset-0 z-10 h-full w-full bg-transparent opacity-0"
+              aria-label="Open Admin Login"
+            />
           </div>
           <nav className="hidden items-center gap-6 md:flex">
             {navLinks.map((link) => (
