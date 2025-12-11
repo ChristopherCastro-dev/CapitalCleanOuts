@@ -1,9 +1,6 @@
 "use server";
 
 import { z } from "zod";
-import { initializeFirebase } from "@/firebase";
-import { addDoc, collection }from "firebase/firestore";
-import { revalidatePath } from "next/cache";
 
 const bookingSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -95,25 +92,14 @@ export async function submitContactForm(prevState: ContactFormState, formData: F
     };
   }
 
-  try {
-    const { firestore } = initializeFirebase();
-    const messagesCollection = collection(firestore, "messages");
-    await addDoc(messagesCollection, {
-      ...validatedFields.data,
-      createdAt: new Date(),
-    });
+  // Here you would save the data to a database.
+  console.log("Contact form data:", validatedFields.data);
 
-    revalidatePath("/admin");
+  // Simulate a delay for network request
+  await new Promise(resolve => setTimeout(resolve, 1000));
 
-    return {
-      message: "Your message has been sent! We will get back to you soon.",
-      success: true,
-    };
-  } catch (error) {
-    console.error("Error saving message to Firestore:", error);
-    return {
-      message: "An unexpected error occurred. Please try again.",
-      success: false,
-    };
-  }
+  return {
+    message: "Your message has been sent! We will get back to you soon.",
+    success: true,
+  };
 }
