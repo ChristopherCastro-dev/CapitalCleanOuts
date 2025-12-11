@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -8,24 +9,27 @@ import { useFormContext } from "react-hook-form";
 import type { BookingFormValues } from "@/lib/schemas";
 
 export default function JunkEstimator() {
-  const [sliderValue, setSliderValue] = useState(truckSizes.findIndex(size => size.fill === '25%') || 1);
   const form = useFormContext<BookingFormValues>();
+  const defaultIndex = truckSizes.findIndex(size => size.label === form.getValues('junkVolume')) || 1;
+  const [sliderValue, setSliderValue] = useState(defaultIndex);
 
   const selectedSize = truckSizes[sliderValue];
 
   const handleValueChange = (value: number[]) => {
     const newIndex = value[0];
+    const newSize = truckSizes[newIndex];
     setSliderValue(newIndex);
     if (form) {
-      form.setValue('junkVolume', truckSizes[newIndex].label, { shouldValidate: true });
+      form.setValue('junkVolume', newSize.label, { shouldValidate: true });
+      form.setValue('price', newSize.price, { shouldValidate: true });
     }
   };
 
   return (
-    <Card className="w-full">
+    <Card className="w-full sticky top-24">
       <CardHeader>
-        <CardTitle className="font-headline text-2xl">Junk Volume Estimator</CardTitle>
-        <CardDescription>Drag the slider to estimate your junk volume and get an instant quote.</CardDescription>
+        <CardTitle className="font-headline text-2xl">1. Estimate Your Junk Volume</CardTitle>
+        <CardDescription>Drag the slider to get an instant price estimate.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-8 pt-4">
         <div className="flex justify-center">
@@ -42,7 +46,7 @@ export default function JunkEstimator() {
         </div>
         <Slider
           value={[sliderValue]}
-          defaultValue={[1]}
+          defaultValue={[defaultIndex]}
           min={0}
           max={truckSizes.length - 1}
           step={1}
@@ -60,3 +64,5 @@ export default function JunkEstimator() {
     </Card>
   );
 }
+
+    

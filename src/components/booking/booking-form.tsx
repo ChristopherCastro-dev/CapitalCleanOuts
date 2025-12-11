@@ -3,6 +3,7 @@
 
 import { useFormContext } from "react-hook-form";
 import { useState } from "react";
+import { format } from "date-fns";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +21,6 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Calendar as CalendarIcon, Loader2, Upload } from "lucide-react";
-import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
 import type { BookingFormValues } from "@/lib/schemas";
 
@@ -52,6 +52,8 @@ export default function BookingForm() {
           address: data.address,
           status: 'Pending',
           date: data.pickupTime ? format(data.pickupTime, "yyyy-MM-dd") : new Date().toISOString().split('T')[0],
+          junkVolume: data.junkVolume,
+          price: form.getValues('price'), // Assuming price is managed in the form state
           photo: photoDataUrl,
           timestamp: Date.now(),
         };
@@ -80,7 +82,7 @@ export default function BookingForm() {
       }
     };
 
-    if (data.junkPhoto instanceof File) {
+    if (data.junkPhoto && data.junkPhoto[0] instanceof File) {
       const reader = new FileReader();
       reader.onload = (e) => {
         processBooking(e.target?.result as string);
@@ -94,7 +96,7 @@ export default function BookingForm() {
         });
         setIsSubmitting(false);
       }
-      reader.readAsDataURL(data.junkPhoto);
+      reader.readAsDataURL(data.junkPhoto[0]);
     } else {
       processBooking();
     }
@@ -109,13 +111,8 @@ export default function BookingForm() {
       <CardContent>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-             <FormField
-              control={form.control}
-              name="junkVolume"
-              render={({ field }) => (
-                <input type="hidden" {...field} />
-              )}
-            />
+             <input type="hidden" {...form.register("junkVolume")} />
+             <input type="hidden" {...form.register("price")} />
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <FormField
                 control={form.control}
@@ -208,13 +205,13 @@ export default function BookingForm() {
                     <FormControl>
                         <label className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-dashed border-border bg-card px-4 py-3 text-muted-foreground transition-colors hover:border-primary hover:text-foreground">
                             <Upload className="h-5 w-5" />
-                            <span>{value?.name || 'Click to upload'}</span>
+                            <span>{value?.[0]?.name || 'Click to upload'}</span>
                             <Input
                                 type="file"
                                 className="sr-only"
                                 {...rest}
                                 onChange={(event) => {
-                                onChange(event.target.files?.[0]);
+                                  onChange(event.target.files);
                                 }}
                                 accept="image/*"
                             />
@@ -233,3 +230,5 @@ export default function BookingForm() {
     </Card>
   );
 }
+
+    
