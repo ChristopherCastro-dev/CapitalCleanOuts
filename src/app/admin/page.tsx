@@ -178,8 +178,13 @@ function StatsSection({ jobs }: { jobs: Job[] }) {
 }
 
 // Messages Section
-function MessagesSection({ messages, setMessages }: { messages: Message[], setMessages: React.Dispatch<React.SetStateAction<Message[]>> }) {
+function MessagesSection({ messages: initialMessages, setMessages }: { messages: Message[], setMessages: React.Dispatch<React.SetStateAction<Message[]>> }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [messages, setInternalMessages] = useState(initialMessages);
+
+  useEffect(() => {
+    setInternalMessages(initialMessages);
+  }, [initialMessages]);
 
   const addMessage = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -269,6 +274,11 @@ function MessagesSection({ messages, setMessages }: { messages: Message[], setMe
 // Jobs Section
 function JobsSection({ jobs, setJobs }: { jobs: Job[], setJobs: React.Dispatch<React.SetStateAction<Job[]>> }) {
   const [searchTerm, setSearchTerm] = useState('');
+  const [internalJobs, setInternalJobs] = useState(jobs);
+
+  useEffect(() => {
+    setInternalJobs(jobs);
+  }, [jobs]);
 
   const addJob = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -314,7 +324,7 @@ function JobsSection({ jobs, setJobs }: { jobs: Job[], setJobs: React.Dispatch<R
     a.click();
   }
 
-  const filteredJobs = jobs.filter(j =>
+  const filteredJobs = internalJobs.filter(j =>
     JSON.stringify(j).toLowerCase().includes(searchTerm.toLowerCase())
   );
   
@@ -418,5 +428,3 @@ function CustomersSection({ customers }: { customers: Customer[] }) {
         </div>
     );
 }
-
-    
