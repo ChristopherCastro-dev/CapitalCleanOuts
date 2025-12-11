@@ -1,8 +1,7 @@
 "use client";
 
-import { useFormStatus } from "react-dom";
 import { useFormContext } from "react-hook-form";
-import { useActionState, useEffect, useRef } from "react";
+import { useEffect, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,40 +21,81 @@ import { cn } from "@/lib/utils";
 import { Calendar as CalendarIcon, Loader2, Upload } from "lucide-react";
 import { format } from "date-fns";
 import { useToast } from "@/hooks/use-toast";
-import { submitBooking } from "@/app/actions";
 import type { BookingFormValues } from "@/lib/schemas";
 
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
+function SubmitButton({isSubmitting}: {isSubmitting: boolean}) {
   return (
-    <Button type="submit" disabled={pending} className="w-full text-lg">
-      {pending ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : null}
+    <Button type="submit" disabled={isSubmitting} className="w-full text-lg">
+      {isSubmitting ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : null}
       Book Now
     </Button>
   );
 }
 
 export default function BookingForm() {
-  const [state, formAction] = useActionState(submitBooking, { message: "", success: false });
   const { toast } = useToast();
-  const formRef = useRef<HTMLFormElement>(null);
-  
   const form = useFormContext<BookingFormValues>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (state.message) {
-      toast({
-        title: state.success ? "Success!" : "Error",
-        description: state.message,
-        variant: state.success ? "default" : "destructive",
-      });
-      if (state.success) {
+  const onSubmit = (data: BookingFormValues) => {
+    setIsSubmitting(true);
+
+    const processBooking = (photoDataUrl?: string) => {
+      try {
+        const existingJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
+        const newJob = {
+          id: `job_${Date.now()}`,
+          clientName: data.name,
+          clientPhone: data.phone,
+          address: data.address,
+          status: 'Pending',
+          date: data.pickupTime ? format(data.pickupTime, "yyyy-MM-dd") : new Date().toISOString().split('T')[0],
+          photo: photoDataUrl,
+          timestamp: Date.now(),
+        };
+
+        const updatedJobs = [newJob, ...existingJobs];
+        localStorage.setItem('jobs', JSON.stringify(updatedJobs));
+
+        toast({
+          title: "Success!",
+          description: "Your booking has been received! We will contact you shortly.",
+        });
         form.reset();
-        formRef.current?.reset();
+
+      } catch (error) {
+        toast({
+          title: "Error",
+          description: "An error occurred while submitting your booking. Please try again.",
+          variant: "destructive",
+        });
+        console.error("Failed to save job to localStorage", error);
+      } finally {
+        setIsSubmitting(false);
       }
+    };
+
+    if (data.junkPhoto instanceof File) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        processBooking(e.target?.result as string);
+      };
+      reader.onerror = (error) => {
+        console.error("File reading error:", error);
+        toast({
+          title: "File Error",
+          description: "Could not read the uploaded image. Please try again.",
+          variant: "destructive",
+        });
+        setIsSubmitting(false);
+      }
+      reader.readAsDataURL(data.junkPhoto);
+    } else {
+      processBooking();
     }
-  }, [state, toast, form]);
+  };
+
 
   return (
     <Card className="w-full">
@@ -64,7 +104,7 @@ export default function BookingForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form ref={formRef} action={formAction} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
              <FormField
               control={form.control}
               name="junkVolume"
@@ -182,7 +222,7 @@ export default function BookingForm() {
                 )}
               />
             </div>
-            <SubmitButton />
+            <SubmitButton isSubmitting={isSubmitting} />
           </form>
         </Form>
       </CardContent>

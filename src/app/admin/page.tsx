@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -112,11 +111,11 @@ function AdminDashboard() {
   // Auto-refresh dashboard if storage changes (from other pages)
   useEffect(() => {
     const handleStorage = (event: StorageEvent) => {
-        if (event.key === 'messages') {
-            setMessages(JSON.parse(localStorage.getItem('messages') || '[]'));
+        if (event.key === 'messages' && event.newValue) {
+            setMessages(JSON.parse(event.newValue));
         }
-        if (event.key === 'jobs') {
-            setJobs(JSON.parse(localStorage.getItem('jobs') || '[]'));
+        if (event.key === 'jobs' && event.newValue) {
+            setJobs(JSON.parse(event.newValue));
         }
     };
     window.addEventListener('storage', handleStorage);
