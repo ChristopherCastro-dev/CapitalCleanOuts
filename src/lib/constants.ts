@@ -39,15 +39,15 @@ export const customerReviews = [
 ];
 
 export const contactDetails = {
-    phone: "1-786-205-7298",
-    phoneDisplay: "(786) 205-7298",
+    phone: "1-305-778-9397",
+    phoneDisplay: "(305) 778-9397",
     email: "contact@junkxpress.com",
     hours: [
         "Monday - Saturday: 7:00 AM - 7:00 PM",
         "Sunday: 9:00 AM - 5:00 PM"
     ],
     googleMapsEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d229988.6534575122!2d-80.36922896645803!3d25.78254530839841!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9b0a20ec8c111%3A0x9add025f82a70364!2sMiami%2C%20FL!5e0!3m2!1sen!2sus!4v1689999999999!5m2!1sen!2sus",
-    whatsappLink: "https://wa.me/17862057298"
+    whatsappLink: "https://wa.me/13057789397"
 };
 
 export const truckSizes = [
