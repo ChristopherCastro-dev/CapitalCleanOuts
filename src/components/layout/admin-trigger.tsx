@@ -15,7 +15,7 @@ export function AdminTrigger() {
     const input = prompt('Enter admin password:');
     if (input === ADMIN_PASSWORD) {
       router.push('/admin');
-    } else if (input !== null) {
+    } else if (input !== null && input !== "") {
       alert('Incorrect password.');
     }
   };
