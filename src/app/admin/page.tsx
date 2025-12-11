@@ -96,10 +96,8 @@ function AdminDashboard() {
 
   // Load data from localStorage on mount
   useEffect(() => {
-    const loadedMessages = JSON.parse(localStorage.getItem('messages') || '[]');
-    const loadedJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
-    setMessages(loadedMessages);
-    setJobs(loadedJobs);
+    setMessages(JSON.parse(localStorage.getItem('messages') || '[]'));
+    setJobs(JSON.parse(localStorage.getItem('jobs') || '[]'));
   }, []);
 
   // Persist data to localStorage on change
@@ -111,10 +109,24 @@ function AdminDashboard() {
     localStorage.setItem('jobs', JSON.stringify(jobs));
   }, [jobs]);
 
+  // Auto-refresh dashboard if storage changes (from other pages)
+  useEffect(() => {
+    const handleStorage = (event: StorageEvent) => {
+        if (event.key === 'messages') {
+            setMessages(JSON.parse(localStorage.getItem('messages') || '[]'));
+        }
+        if (event.key === 'jobs') {
+            setJobs(JSON.parse(localStorage.getItem('jobs') || '[]'));
+        }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
   const customers = useMemo<Customer[]>(() => {
     const customerMap = new Map<string, Customer>();
     messages.forEach(m => {
-      if (!customerMap.has(m.email)) {
+      if (m.email && !customerMap.has(m.email)) {
         customerMap.set(m.email, { name: m.name, email: m.email, phone: m.phone });
       }
     });
