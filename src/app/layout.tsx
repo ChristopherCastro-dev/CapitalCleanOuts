@@ -4,7 +4,6 @@ import { Toaster } from '@/components/ui/toaster';
 import Header from '@/components/layout/header';
 import Footer from '@/components/layout/footer';
 import { FloatingButtons } from '@/components/layout/floating-buttons';
-import { Chatbot } from '@/components/shared/chatbot';
 
 export const metadata: Metadata = {
   title: 'JUNKXPRESS | Fast, Affordable Cleanouts in Miami',
@@ -34,7 +33,6 @@ export default function RootLayout({
           <Footer />
         </div>
         <FloatingButtons />
-        <Chatbot />
         <Toaster />
       </body>
     </html>
