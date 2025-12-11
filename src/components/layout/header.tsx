@@ -29,13 +29,13 @@ export default function Header() {
   }, []);
 
   const handleLogoClick = () => {
+    clickCount.current += 1;
+
     if (clickTimer.current) {
       clearTimeout(clickTimer.current);
     }
 
-    clickCount.current += 1;
-
-    if (clickCount.current === 5) {
+    if (clickCount.current === 2) {
       clickCount.current = 0;
       
       const password = prompt("Enter admin passcode:");
@@ -51,7 +51,7 @@ export default function Header() {
     } else {
         clickTimer.current = setTimeout(() => {
             clickCount.current = 0;
-        }, 1500); // Reset after 1.5 seconds
+        }, 500); // Reset after 500ms for double-click
     }
   };
 
