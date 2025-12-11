@@ -1,3 +1,4 @@
+
 'use client';
 import { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
@@ -236,3 +237,5 @@ function StatsSection({ jobs }: { jobs: Job[] }) {
       </div>
     );
 }
+
+    

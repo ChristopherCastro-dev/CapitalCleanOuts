@@ -8,7 +8,6 @@ import { Slider } from "@/components/ui/slider";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { truckSizes } from "@/lib/constants";
 import { Upload } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function BookingPage() {
   const [clientName, setClientName] = useState('');
@@ -17,8 +16,7 @@ export default function BookingPage() {
   const [date, setDate] = useState('');
   const [photo, setPhoto] = useState<string | undefined>();
   const [junkVolumeIndex, setJunkVolumeIndex] = useState(1); // Default to 1/4 load
-  const [status, setStatus] = useState<'Pending'|'In Progress'|'Completed'>('Pending');
-
+  
   const selectedSize = truckSizes[junkVolumeIndex];
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,13 +33,13 @@ export default function BookingPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const jobs = JSON.parse(localStorage.getItem('jobs') || '[]');
+    const jobs = JSON.parse(localStorage.getItem('jobs') || '[]' );
     const newJob = {
       id: `job_${Date.now()}`,
       clientName,
       clientPhone,
       address,
-      status,
+      status: 'Pending',
       date,
       junkVolume: selectedSize.label,
       price: selectedSize.price,
@@ -61,7 +59,6 @@ export default function BookingPage() {
     setDate('');
     setPhoto(undefined);
     setJunkVolumeIndex(1);
-    setStatus('Pending');
 
     alert('Booking submitted!');
   };
@@ -144,3 +141,5 @@ export default function BookingPage() {
     </section>
   );
 }
+
+    
