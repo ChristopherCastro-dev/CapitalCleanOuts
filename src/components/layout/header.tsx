@@ -2,21 +2,18 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Truck } from "lucide-react";
 import { navLinks } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
 
 export default function Header() {
   const pathname = usePathname();
-  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const { toast } = useToast();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,37 +23,16 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleAdminAccess = () => {
-    const password = prompt("Enter admin passcode:");
-    if (password === (process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "password")) {
-      router.push("/admin");
-    } else if (password !== null) {
-      toast({
-        title: "Access Denied",
-        description: "Incorrect passcode.",
-        variant: "destructive",
-      });
-    }
-  };
-
-
   return (
     <header className={cn(
       "sticky top-0 z-50 w-full transition-all duration-300",
       isScrolled ? "bg-background/80 backdrop-blur-lg border-b border-border/50" : "bg-transparent"
     )}>
       <div className="container flex h-20 items-center justify-between px-4 md:px-6">
-        <div className="relative flex items-center gap-2 font-headline text-2xl font-bold">
-          <Link href="/" className="flex items-center gap-2">
-            <Truck className="h-7 w-7 text-primary" />
-            <span>JUNKXPRESS</span>
-          </Link>
-          <button
-            onClick={handleAdminAccess}
-            className="absolute inset-0 z-10 h-full w-full cursor-pointer bg-black/0"
-            aria-label="Admin Access"
-          />
-        </div>
+        <Link href="/" className="flex items-center gap-2 font-headline text-2xl font-bold">
+          <Truck className="h-7 w-7 text-primary" />
+          <span>JUNKXPRESS</span>
+        </Link>
         <nav className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
             <Link
