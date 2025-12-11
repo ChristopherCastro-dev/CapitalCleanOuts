@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Truck } from "lucide-react";
 import { navLinks } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "@/components/ui/alert-dialog";
 import { Input } from "@/components/ui/input";
 
@@ -32,19 +32,7 @@ export default function Header() {
   }, []);
 
   const handleAdminAccess = () => {
-    setShowAdminModal(true);
-  };
-
-  const handlePasswordSubmit = () => {
-    if (password === ADMIN_PASSWORD) {
-      setError('');
-      setPassword('');
-      setShowAdminModal(false);
-      router.push('/admin');
-    } else {
-      setError('Incorrect password.');
-      setPassword('');
-    }
+    router.push('/admin');
   };
 
   return (
@@ -120,34 +108,6 @@ export default function Header() {
           </Sheet>
         </div>
       </header>
-
-      <AlertDialog open={showAdminModal} onOpenChange={setShowAdminModal}>
-        <AlertDialogContent className="bg-[#111] border-gray-700 text-white">
-          <AlertDialogHeader>
-            <AlertDialogTitle className="text-center text-2xl font-bold text-[#1AB16A]">
-              Admin Access
-            </AlertDialogTitle>
-            <AlertDialogDescription className="text-center text-gray-400">
-              Enter passcode to unlock the dashboard.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <div className="space-y-4 py-4">
-              <Input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handlePasswordSubmit()}
-                className="bg-black border-[#1AB16A]/50 text-white focus:ring-[#1AB16A] text-center"
-              />
-              {error && <p className="text-sm font-medium text-red-500 text-center">{error}</p>}
-            </div>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {setError(''); setPassword('');}} className="bg-gray-700 hover:bg-gray-600 border-0">Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handlePasswordSubmit} className="bg-[#1AB16A] text-black font-bold hover:bg-[#1AB16A]/80">Unlock</AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 }
