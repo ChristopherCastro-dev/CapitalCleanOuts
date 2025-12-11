@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect, useTransition } from "react";
-import { faqChatbot } from "@/ai/flows/faq-chatbot";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +8,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bot, Loader2, Send, Sparkles, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
+import type { FAQChatbotInput, FAQChatbotOutput } from "@/ai/flows/faq-chatbot";
 
 type Message = {
   role: "user" | "bot";
@@ -33,14 +33,31 @@ export function Chatbot() {
 
     const userMessage: Message = { role: "user", content: input };
     setMessages((prev) => [...prev, userMessage]);
+    const currentInput = input;
     setInput("");
 
     startTransition(async () => {
       try {
-        const response = await faqChatbot({ query: input });
-        const botMessage: Message = { role: "bot", content: response.answer };
+        const response = await fetch('/api/genkit/faqChatbotFlow', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            query: currentInput
+          } as FAQChatbotInput),
+        });
+
+        if (!response.ok) {
+            throw new Error(`API call failed with status: ${response.status}`)
+        }
+        
+        const data: FAQChatbotOutput = await response.json();
+
+        const botMessage: Message = { role: "bot", content: data.answer };
         setMessages((prev) => [...prev, botMessage]);
       } catch (error) {
+        console.error("Chatbot error:", error);
         const errorMessage: Message = {
           role: "bot",
           content: "Sorry, I'm having trouble connecting. Please try again later.",
