@@ -1,0 +1,42 @@
+import { Button } from "@/components/ui/button";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
+import Image from "next/image";
+import Link from "next/link";
+
+const heroImage = PlaceHolderImages.find(img => img.id === 'hero-background');
+
+export default function Hero() {
+  return (
+    <section className="relative w-full h-[70vh] min-h-[500px] md:h-screen flex items-center justify-center text-center text-white py-0">
+      {heroImage && (
+        <Image
+          src={heroImage.imageUrl}
+          alt={heroImage.description}
+          data-ai-hint={heroImage.imageHint}
+          fill
+          className="object-cover"
+          priority
+        />
+      )}
+      <div className="absolute inset-0 bg-black/60" />
+      <div className="relative z-10 container px-4 md:px-6">
+        <div className="mx-auto max-w-4xl space-y-6">
+          <h1 className="font-headline text-4xl font-bold tracking-tighter text-white sm:text-5xl md:text-6xl lg:text-7xl">
+            Fast, Affordable Cleanouts in Miami
+          </h1>
+          <p className="text-lg text-gray-200 md:text-xl">
+            Same-Day Junk Removal for Homes, Offices, and More. Get Your Space Back Today!
+          </p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+            <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Link href="/booking">Book a Cleanout</Link>
+            </Button>
+            <Button asChild size="lg" variant="secondary" className="bg-accent hover:bg-accent/90 text-accent-foreground">
+              <Link href="/booking">Get a Free Quote</Link>
+            </Button>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
