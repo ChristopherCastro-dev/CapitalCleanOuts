@@ -7,7 +7,7 @@ export function AdminTrigger() {
   const router = useRouter();
 
   const handleAdminAccess = (event: React.MouseEvent<HTMLButtonElement>) => {
-    // Prevent the underlying Link from navigating
+    // Prevent any underlying elements from being triggered
     event.preventDefault();
     event.stopPropagation();
     
@@ -22,7 +22,7 @@ export function AdminTrigger() {
 
   return (
     <button
-      onClick={handleAdminAccess}
+      onDoubleClick={handleAdminAccess}
       className="absolute inset-0 z-10 h-full w-full bg-transparent"
       aria-label="Open Admin Login"
     />
