@@ -101,12 +101,16 @@ function AdminDashboard() {
       setJobs(JSON.parse(localStorage.getItem('jobs') || '[]'));
     };
 
-    loadData();
+    loadData(); // Initial load
 
+    // Listen for custom events triggered from other pages
     window.addEventListener('messages-updated', loadData);
     window.addEventListener('jobs-updated', loadData);
-    window.addEventListener('storage', loadData); // For multi-tab
+    
+    // Listen for storage changes from other tabs
+    window.addEventListener('storage', loadData);
 
+    // Cleanup listeners on component unmount
     return () => {
       window.removeEventListener('messages-updated', loadData);
       window.removeEventListener('jobs-updated', loadData);
@@ -342,3 +346,5 @@ function CustomersSection({ customers }: { customers: Customer[] }) {
         </div>
     );
 }
+
+    
