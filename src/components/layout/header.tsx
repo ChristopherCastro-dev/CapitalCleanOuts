@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Truck } from "lucide-react";
@@ -14,7 +14,6 @@ export default function Header() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,10 +22,6 @@ export default function Header() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleAdminAccess = () => {
-    router.push('/admin');
-  };
 
   return (
     <>
@@ -40,11 +35,6 @@ export default function Header() {
               <Truck className="h-7 w-7 text-primary" />
               <span>JUNKXPRESS</span>
             </Link>
-            <button
-              onClick={handleAdminAccess}
-              className="absolute inset-0 z-10 h-full w-full bg-transparent opacity-0"
-              aria-label="Open Admin Login"
-            />
           </div>
           <nav className="hidden items-center gap-6 md:flex">
             {navLinks.map((link) => (
