@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
@@ -178,37 +179,16 @@ function StatsSection({ jobs }: { jobs: Job[] }) {
 }
 
 // Messages Section
-function MessagesSection({ messages: initialMessages, setMessages }: { messages: Message[], setMessages: React.Dispatch<React.SetStateAction<Message[]>> }) {
+function MessagesSection({ messages, setMessages }: { messages: Message[], setMessages: React.Dispatch<React.SetStateAction<Message[]>> }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [messages, setInternalMessages] = useState(initialMessages);
-
-  useEffect(() => {
-    setInternalMessages(initialMessages);
-  }, [initialMessages]);
-
-  const addMessage = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const newMsg: Message = {
-      id: `msg_${Date.now()}`,
-      name: (form.elements.namedItem('name') as HTMLInputElement).value,
-      email: (form.elements.namedItem('email') as HTMLInputElement).value,
-      phone: (form.elements.namedItem('phone') as HTMLInputElement).value,
-      message: (form.elements.namedItem('message') as HTMLTextAreaElement).value,
-      timestamp: Date.now(),
-      read: false,
-    };
-    setMessages(prev => [newMsg, ...prev]);
-    form.reset();
-  };
   
   const toggleRead = (id: string) => {
-    setMessages(messages.map(m => m.id === id ? { ...m, read: !m.read } : m));
+    setMessages(prevMessages => prevMessages.map(m => m.id === id ? { ...m, read: !m.read } : m));
   }
   
   const deleteMessage = (id: string) => {
     if (confirm('Are you sure you want to delete this message?')) {
-      setMessages(messages.filter(m => m.id !== id));
+      setMessages(prevMessages => prevMessages.filter(m => m.id !== id));
     }
   }
 
@@ -258,15 +238,6 @@ function MessagesSection({ messages: initialMessages, setMessages }: { messages:
           </Card>
         ))}
       </div>
-
-      <h3 className="text-xl font-bold mt-8 mb-4">Add New Message</h3>
-      <form onSubmit={addMessage} className="space-y-4 bg-[#151515] p-4 rounded-lg">
-        <Input name="name" placeholder="Name" required className="bg-[#0f0f0f] border-none" />
-        <Input name="email" type="email" placeholder="Email" required className="bg-[#0f0f0f] border-none" />
-        <Input name="phone" placeholder="Phone" required className="bg-[#0f0f0f] border-none" />
-        <Textarea name="message" placeholder="Message" required className="bg-[#0f0f0f] border-none" />
-        <Button type="submit" variant="neon-green">Add Message</Button>
-      </form>
     </div>
   );
 }
@@ -274,44 +245,10 @@ function MessagesSection({ messages: initialMessages, setMessages }: { messages:
 // Jobs Section
 function JobsSection({ jobs, setJobs }: { jobs: Job[], setJobs: React.Dispatch<React.SetStateAction<Job[]>> }) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [internalJobs, setInternalJobs] = useState(jobs);
-
-  useEffect(() => {
-    setInternalJobs(jobs);
-  }, [jobs]);
-
-  const addJob = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    const file = (form.elements.namedItem('jobPhoto') as HTMLInputElement).files?.[0];
-
-    const createJob = (photo?: string) => {
-        const newJob: Job = {
-            id: `job_${Date.now()}`,
-            clientName: (form.elements.namedItem('clientName') as HTMLInputElement).value,
-            clientPhone: (form.elements.namedItem('clientPhone') as HTMLInputElement).value,
-            address: (form.elements.namedItem('address') as HTMLInputElement).value,
-            status: (form.elements.namedItem('status') as HTMLSelectElement).value as Job['status'],
-            date: (form.elements.namedItem('date') as HTMLInputElement).value,
-            timestamp: Date.now(),
-            photo: photo,
-        };
-        setJobs(prev => [newJob, ...prev]);
-        form.reset();
-    };
-
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = () => createJob(reader.result as string);
-        reader.readAsDataURL(file);
-    } else {
-        createJob();
-    }
-  };
 
   const deleteJob = (id: string) => {
     if (confirm('Are you sure you want to delete this job?')) {
-        setJobs(jobs.filter(j => j.id !== id));
+        setJobs(prevJobs => prevJobs.filter(j => j.id !== id));
     }
   };
   
@@ -324,36 +261,13 @@ function JobsSection({ jobs, setJobs }: { jobs: Job[], setJobs: React.Dispatch<R
     a.click();
   }
 
-  const filteredJobs = internalJobs.filter(j =>
+  const filteredJobs = jobs.filter(j =>
     JSON.stringify(j).toLowerCase().includes(searchTerm.toLowerCase())
   );
   
   return (
     <div>
       <h2 className="text-2xl font-bold mb-4">Jobs</h2>
-      <form onSubmit={addJob} className="space-y-4 bg-[#151515] p-4 rounded-lg mb-4">
-        <div className="grid md:grid-cols-2 gap-4">
-            <Input name="clientName" placeholder="Client Name" required className="bg-[#0f0f0f] border-none" />
-            <Input name="clientPhone" placeholder="Client Phone" required className="bg-[#0f0f0f] border-none" />
-        </div>
-        <Input name="address" placeholder="Job Address" required className="bg-[#0f0f0f] border-none" />
-        <div className="grid md:grid-cols-2 gap-4">
-            <Select name="status" defaultValue="Pending">
-                <SelectTrigger className="bg-[#0f0f0f] border-none">
-                    <SelectValue placeholder="Select status" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="Pending">Pending</SelectItem>
-                    <SelectItem value="In Progress">In Progress</SelectItem>
-                    <SelectItem value="Completed">Completed</SelectItem>
-                </SelectContent>
-            </Select>
-            <Input name="date" type="date" required className="bg-[#0f0f0f] border-none" />
-        </div>
-        <Input name="jobPhoto" type="file" accept="image/*" className="bg-[#0f0f0f] border-none" />
-        <Button type="submit" variant="neon-green">Add Job</Button>
-      </form>
-
       <div className="flex gap-4 mb-4">
         <Input 
             id="searchJobs"

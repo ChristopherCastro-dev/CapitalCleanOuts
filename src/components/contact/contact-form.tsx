@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -23,6 +24,7 @@ import { useToast } from "@/hooks/use-toast";
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
   email: z.string().email("A valid email is required"),
+  phone: z.string().optional(),
   message: z.string().min(10, "Message must be at least 10 characters long."),
 });
 
@@ -37,6 +39,7 @@ export default function ContactForm() {
     defaultValues: {
       name: "",
       email: "",
+      phone: "",
       message: "",
     },
   });
@@ -48,8 +51,10 @@ export default function ContactForm() {
       const existingMessages = JSON.parse(localStorage.getItem('messages') || '[]');
       const newMessage = {
         id: `msg_${Date.now()}`,
-        ...data,
-        phone: '', // Add empty phone to match dashboard data structure
+        name: data.name,
+        email: data.email,
+        phone: data.phone || '', // Ensure phone is always a string
+        message: data.message,
         timestamp: Date.now(),
         read: false
       };
@@ -57,7 +62,7 @@ export default function ContactForm() {
       const updatedMessages = [newMessage, ...existingMessages];
       localStorage.setItem('messages', JSON.stringify(updatedMessages));
 
-      // Dispatch custom event
+      // Dispatch custom event so dashboard can auto-update
       window.dispatchEvent(new Event('messages-updated'));
       
       toast({
@@ -100,7 +105,7 @@ export default function ContactForm() {
                 </FormItem>
               )}
             />
-            <FormField
+             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
@@ -108,6 +113,19 @@ export default function ContactForm() {
                   <FormLabel>Email Address</FormLabel>
                   <FormControl>
                     <Input placeholder="you@example.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Phone (Optional)</FormLabel>
+                  <FormControl>
+                    <Input placeholder="(555) 555-5555" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -136,5 +154,3 @@ export default function ContactForm() {
     </Card>
   );
 }
-
-    

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useFormContext } from "react-hook-form";
@@ -58,7 +59,7 @@ export default function BookingForm() {
         const updatedJobs = [newJob, ...existingJobs];
         localStorage.setItem('jobs', JSON.stringify(updatedJobs));
 
-        // Dispatch custom event
+        // Dispatch custom event for dashboard to listen to
         window.dispatchEvent(new Event('jobs-updated'));
 
         toast({
@@ -232,5 +233,3 @@ export default function BookingForm() {
     </Card>
   );
 }
-
-    
