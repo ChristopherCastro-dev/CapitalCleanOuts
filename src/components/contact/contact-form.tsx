@@ -1,10 +1,8 @@
 "use client";
 
-import { useFormStatus } from "react-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useActionState, useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +18,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { submitContactForm } from "@/app/actions";
+import { useState } from "react";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -28,22 +26,13 @@ const formSchema = z.object({
   message: z.string().min(10, "Message must be at least 10 characters long."),
 });
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button type="submit" disabled={pending} className="w-full">
-      {pending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-      Send Message
-    </Button>
-  );
-}
+type ContactFormValues = z.infer<typeof formSchema>;
 
 export default function ContactForm() {
-  const [state, formAction] = useActionState(submitContactForm, { message: "", success: false });
   const { toast } = useToast();
-  const formRef = useRef<HTMLFormElement>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<ContactFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
@@ -52,19 +41,39 @@ export default function ContactForm() {
     },
   });
 
-  useEffect(() => {
-    if (state.message) {
+  const onSubmit = (data: ContactFormValues) => {
+    setIsSubmitting(true);
+
+    try {
+      const existingMessages = JSON.parse(localStorage.getItem('messages') || '[]');
+      const newMessage = {
+        id: `msg_${Date.now()}`,
+        ...data,
+        phone: '', // The new dashboard schema has a phone field.
+        timestamp: Date.now(),
+        read: false
+      };
+      
+      const updatedMessages = [newMessage, ...existingMessages];
+      localStorage.setItem('messages', JSON.stringify(updatedMessages));
+      
       toast({
-        title: state.success ? "Success!" : "Error",
-        description: state.message,
-        variant: state.success ? "default" : "destructive",
+        title: "Success!",
+        description: "Your message has been sent! We will get back to you soon.",
       });
-      if (state.success) {
-        form.reset();
-        formRef.current?.reset();
-      }
+      form.reset();
+
+    } catch (error) {
+       toast({
+        title: "Error",
+        description: "An error occurred while sending your message. Please try again later.",
+        variant: "destructive",
+      });
+      console.error("Failed to save message to localStorage", error);
+    } finally {
+      setIsSubmitting(false);
     }
-  }, [state, toast, form]);
+  };
 
   return (
     <Card className="w-full">
@@ -74,7 +83,7 @@ export default function ContactForm() {
       </CardHeader>
       <CardContent>
         <Form {...form}>
-          <form ref={formRef} action={formAction} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <FormField
               control={form.control}
               name="name"
@@ -114,7 +123,10 @@ export default function ContactForm() {
                 </FormItem>
               )}
             />
-            <SubmitButton />
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+              {isSubmitting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
+              Send Message
+            </Button>
           </form>
         </Form>
       </CardContent>
