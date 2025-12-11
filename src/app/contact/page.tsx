@@ -1,8 +1,42 @@
-import ContactForm from "@/components/contact/contact-form";
-import ContactInfo from "@/components/contact/contact-info";
-import { contactDetails } from "@/lib/constants";
+
+'use client';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import ContactInfo from '@/components/contact/contact-info';
+import { contactDetails } from '@/lib/constants';
 
 export default function ContactPage() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const messages = JSON.parse(localStorage.getItem('messages') || '[]');
+    const newMsg = {
+      id: `msg_${Date.now()}`,
+      name,
+      email,
+      phone,
+      message,
+      timestamp: Date.now(),
+      read: false,
+    };
+    messages.unshift(newMsg);
+    localStorage.setItem('messages', JSON.stringify(messages));
+
+    // Trigger dashboard update
+    window.dispatchEvent(new Event('messages-updated'));
+
+    setName('');
+    setEmail('');
+    setPhone('');
+    setMessage('');
+    alert('Message sent!');
+  };
   return (
     <section>
       <div className="container px-4 md:px-6">
@@ -33,12 +67,16 @@ export default function ContactPage() {
             </div>
           </div>
           <div className="flex flex-col justify-center">
-            <ContactForm />
+             <form onSubmit={handleSubmit} className="w-full space-y-4 rounded-lg bg-card p-6">
+                <Input placeholder="Full Name" value={name} onChange={e=>setName(e.target.value)} required />
+                <Input type="email" placeholder="Email" value={email} onChange={e=>setEmail(e.target.value)} required />
+                <Input placeholder="Phone (Optional)" value={phone} onChange={e=>setPhone(e.target.value)} />
+                <Textarea placeholder="Message" value={message} onChange={e=>setMessage(e.target.value)} required />
+                <Button type="submit" variant="default" className="w-full">Send Message</Button>
+            </form>
           </div>
         </div>
       </div>
     </section>
   );
 }
-
-    
