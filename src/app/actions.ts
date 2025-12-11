@@ -1,6 +1,8 @@
 "use server";
 
 import { z } from "zod";
+import { addDoc, collection, serverTimestamp } from "firebase/firestore";
+import { initializeFirebase } from "@/firebase";
 
 const bookingSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -91,15 +93,25 @@ export async function submitContactForm(prevState: ContactFormState, formData: F
       success: false,
     };
   }
+  
+  try {
+    const { firestore } = initializeFirebase();
+    await addDoc(collection(firestore, 'messages'), {
+      ...validatedFields.data,
+      createdAt: serverTimestamp(),
+      isRead: false
+    });
+    
+    return {
+      message: "Your message has been sent! We will get back to you soon.",
+      success: true,
+    };
 
-  // Here you would save the data to a database.
-  console.log("Contact form data:", validatedFields.data);
-
-  // Simulate a delay for network request
-  await new Promise(resolve => setTimeout(resolve, 1000));
-
-  return {
-    message: "Your message has been sent! We will get back to you soon.",
-    success: true,
-  };
+  } catch (error) {
+    console.error("Error writing to Firestore: ", error);
+    return {
+      message: "An error occurred while sending your message. Please try again later.",
+      success: false,
+    };
+  }
 }
