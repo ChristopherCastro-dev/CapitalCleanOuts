@@ -8,7 +8,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, Truck } from "lucide-react";
 import { navLinks } from "@/lib/constants";
 import { cn } from "@/lib/utils";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Header() {
@@ -17,8 +17,6 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const { toast } = useToast();
-  const clickCount = useRef(0);
-  const clickTimer = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,29 +26,16 @@ export default function Header() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleLogoClick = () => {
-    clickCount.current += 1;
-
-    if (clickTimer.current) {
-      clearTimeout(clickTimer.current);
-    }
-
-    if (clickCount.current === 2) {
-      clickCount.current = 0;
-      const password = prompt("Enter admin passcode:");
-      if (password === (process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "password")) {
-        router.push("/admin");
-      } else if (password !== null) {
-        toast({
-          title: "Access Denied",
-          description: "Incorrect passcode.",
-          variant: "destructive",
-        });
-      }
-    } else {
-       clickTimer.current = setTimeout(() => {
-        clickCount.current = 0;
-      }, 300); 
+  const handleAdminAccess = () => {
+    const password = prompt("Enter admin passcode:");
+    if (password === (process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "password")) {
+      router.push("/admin");
+    } else if (password !== null) {
+      toast({
+        title: "Access Denied",
+        description: "Incorrect passcode.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -61,9 +46,16 @@ export default function Header() {
       isScrolled ? "bg-background/80 backdrop-blur-lg border-b border-border/50" : "bg-transparent"
     )}>
       <div className="container flex h-20 items-center justify-between px-4 md:px-6">
-        <div onClick={handleLogoClick} className="flex items-center gap-2 font-headline text-2xl font-bold cursor-pointer">
-          <Truck className="h-7 w-7 text-primary" />
-          <span>JUNKXPRESS</span>
+        <div className="relative flex items-center gap-2 font-headline text-2xl font-bold">
+          <Link href="/" className="flex items-center gap-2">
+            <Truck className="h-7 w-7 text-primary" />
+            <span>JUNKXPRESS</span>
+          </Link>
+          <button
+            onClick={handleAdminAccess}
+            className="absolute inset-0 z-10 h-full w-full bg-transparent"
+            aria-label="Admin Access"
+          />
         </div>
         <nav className="hidden items-center gap-6 md:flex">
           {navLinks.map((link) => (
