@@ -15,14 +15,12 @@ export const teamMembers = [
     {
       name: "Alex Martinez",
       role: "Founder & CEO",
-      imageId: "team-member-1",
-      phone: "786-205-7298"
+      imageId: "team-member-1"
     },
     {
       name: "Maria Rodriguez",
       role: "Operations Manager",
-      imageId: "team-member-2",
-      phone: "786-387-1153"
+      imageId: "team-member-2"
     },
     {
       name: "Carlos Vega",
@@ -40,8 +38,10 @@ export const customerReviews = [
 ];
 
 export const contactDetails = {
-    phone: "1-305-778-9397",
-    phoneDisplay: "(305) 778-9397",
+    phones: [
+      { number: "1-786-205-7298", display: "(786) 205-7298", owner: "Alex Martinez" },
+      { number: "1-786-387-1153", display: "(786) 387-1153", owner: "Maria Rodriguez" },
+    ],
     email: "contact@junkxpress.com",
     hours: [
         "Monday - Saturday: 7:00 AM - 7:00 PM",
