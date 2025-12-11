@@ -29,19 +29,14 @@ export default function Header() {
   }, []);
 
   const handleLogoClick = () => {
-    clickCount.current += 1;
-
     if (clickTimer.current) {
       clearTimeout(clickTimer.current);
     }
 
-    clickTimer.current = setTimeout(() => {
-      clickCount.current = 0;
-    }, 1500); // Reset after 1.5 seconds
+    clickCount.current += 1;
 
     if (clickCount.current === 5) {
       clickCount.current = 0;
-      clearTimeout(clickTimer.current);
       
       const password = prompt("Enter admin passcode:");
       if (password === (process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "password")) {
@@ -53,6 +48,10 @@ export default function Header() {
           variant: "destructive",
         });
       }
+    } else {
+        clickTimer.current = setTimeout(() => {
+            clickCount.current = 0;
+        }, 1500); // Reset after 1.5 seconds
     }
   };
 
