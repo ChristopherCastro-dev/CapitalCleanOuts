@@ -123,9 +123,9 @@ export default function BookingPage() {
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
-                      <Input placeholder="Client Name" value={clientName} onChange={e=>setClientName(e.target.value)} required />
-                      <Input placeholder="Client Phone" value={clientPhone} onChange={e=>setClientPhone(e.target.value)} required />
-                      <Input placeholder="Address" value={address} onChange={e=>setAddress(e.target.value)} required />
+                      <Input placeholder="Full Name" value={clientName} onChange={e=>setClientName(e.target.value)} required />
+                      <Input placeholder="Phone Number" value={clientPhone} onChange={e=>setClientPhone(e.target.value)} required />
+                      <Input placeholder="Pickup Address" value={address} onChange={e=>setAddress(e.target.value)} required />
                       <Input type="date" value={date} onChange={e=>setDate(e.target.value)} required />
                        <label className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-md border-2 border-dashed border-border bg-card px-4 py-3 text-muted-foreground transition-colors hover:border-primary hover:text-foreground">
                           <Upload className="h-5 w-5" />

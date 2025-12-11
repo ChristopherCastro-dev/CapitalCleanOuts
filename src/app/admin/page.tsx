@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 
 type Message = { id:string, name:string, email:string, phone:string, message:string, timestamp:number, read:boolean };
-type Job = { id:string, clientName:string, clientPhone:string, address:string, status:'Pending'|'In Progress'|'Completed', date:string, timestamp:number, photo?: string };
+type Job = { id:string, clientName:string, clientPhone:string, address:string, status:'Pending'|'In Progress'|'Completed', date:string, timestamp:number, photo?: string, junkVolume?: string, price?: string };
 type Customer = { email: string, name: string, phone: string };
 
 export default function AdminDashboardPage() {
@@ -91,10 +91,10 @@ function AdminDashboard(){
     <div className="min-h-screen bg-[#0f0f0f] text-white p-4">
       <header className="bg-[#1AB16A] p-4 text-black font-bold text-2xl text-center mb-4">JUNKXPRESS Dashboard</header>
       <nav className="flex flex-wrap gap-2 justify-center mb-4">
-        <Button variant="neon-green" onClick={()=>setActiveSection('messages')}>Messages</Button>
-        <Button variant="neon-green" onClick={()=>setActiveSection('jobs')}>Jobs</Button>
-        <Button variant="neon-green" onClick={()=>setActiveSection('customers')}>Customers</Button>
-        <Button variant="neon-green" onClick={()=>setActiveSection('stats')}>Stats</Button>
+        <Button variant={activeSection === 'messages' ? 'default' : 'neon-green'} onClick={()=>setActiveSection('messages')}>Messages</Button>
+        <Button variant={activeSection === 'jobs' ? 'default' : 'neon-green'} onClick={()=>setActiveSection('jobs')}>Jobs</Button>
+        <Button variant={activeSection === 'customers' ? 'default' : 'neon-green'} onClick={()=>setActiveSection('customers')}>Customers</Button>
+        <Button variant={activeSection === 'stats' ? 'default' : 'neon-green'} onClick={()=>setActiveSection('stats')}>Stats</Button>
       </nav>
 
       <main>
@@ -152,8 +152,8 @@ function JobsSection({jobs,setJobs}:{jobs:Job[],setJobs:React.Dispatch<React.Set
   const deleteJob=(id:string)=>setJobs(jobs.filter(j=>j.id!==id));
 
   const exportCSV = () => {
-    let csv = 'Client,Phone,Address,Status,Date\n';
-    jobs.forEach(j => csv += `${j.clientName},${j.clientPhone},${j.address},${j.status},${j.date}\n`);
+    let csv = 'Client,Phone,Address,Status,Date,Volume,Price\n';
+    jobs.forEach(j => csv += `${j.clientName},${j.clientPhone},"${j.address}",${j.status},${j.date},${j.junkVolume || ''},${j.price || ''}\n`);
     const a = document.createElement('a');
     a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
     a.download = 'jobs.csv';
@@ -174,6 +174,8 @@ function JobsSection({jobs,setJobs}:{jobs:Job[],setJobs:React.Dispatch<React.Set
             <p><strong>Address:</strong> {j.address}</p>
             <p><strong>Status:</strong> {j.status}</p>
             <p><strong>Date:</strong> {j.date}</p>
+            {j.junkVolume && <p><strong>Volume:</strong> {j.junkVolume}</p>}
+            {j.price && <p><strong>Est. Price:</strong> {j.price}</p>}
             {j.photo && <Image src={j.photo} alt="Job photo" width={100} height={100} className="rounded-md mt-2" />}
             <div className="flex gap-2 mt-2">
               <Button size="sm" variant="destructive" onClick={()=>deleteJob(j.id)}>Delete</Button>
