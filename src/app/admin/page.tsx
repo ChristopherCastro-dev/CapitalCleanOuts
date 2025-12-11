@@ -106,7 +106,7 @@ function AdminDashboard(){
   );
 }
 
-function MessagesSection({messages,setMessages}:{messages:Message[],setMessages:any}){
+function MessagesSection({messages,setMessages}:{messages:Message[],setMessages:React.Dispatch<React.SetStateAction<Message[]>>}){
   const toggleRead=(id:string)=>setMessages(messages.map(m=>m.id===id?{...m,read:!m.read}:m));
   const deleteMsg=(id:string)=>setMessages(messages.filter(m=>m.id!==id));
 
@@ -147,7 +147,7 @@ function MessagesSection({messages,setMessages}:{messages:Message[],setMessages:
   );
 }
 
-function JobsSection({jobs,setJobs}:{jobs:Job[],setJobs:any}){
+function JobsSection({jobs,setJobs}:{jobs:Job[],setJobs:React.Dispatch<React.SetStateAction<Job[]>>}){
   const deleteJob=(id:string)=>setJobs(jobs.filter(j=>j.id!==id));
 
   const exportCSV = () => {
