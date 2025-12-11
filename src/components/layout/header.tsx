@@ -53,7 +53,7 @@ export default function Header() {
           </Link>
           <button
             onClick={handleAdminAccess}
-            className="absolute inset-0 z-10 h-full w-full bg-transparent"
+            className="absolute inset-0 z-10 h-full w-full cursor-pointer bg-black/0"
             aria-label="Admin Access"
           />
         </div>
