@@ -1,8 +1,8 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
+import { useFormStatus } from "react-dom";
 import { useFormContext } from "react-hook-form";
-import { useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -37,7 +37,7 @@ function SubmitButton() {
 }
 
 export default function BookingForm() {
-  const [state, formAction] = useFormState(submitBooking, { message: "", success: false });
+  const [state, formAction] = useActionState(submitBooking, { message: "", success: false });
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
   

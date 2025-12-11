@@ -1,10 +1,10 @@
 "use client";
 
-import { useFormState, useFormStatus } from "react-dom";
+import { useFormStatus } from "react-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useEffect, useRef } from "react";
+import { useActionState, useEffect, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -39,7 +39,7 @@ function SubmitButton() {
 }
 
 export default function ContactForm() {
-  const [state, formAction] = useFormState(submitContactForm, { message: "", success: false });
+  const [state, formAction] = useActionState(submitContactForm, { message: "", success: false });
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
   
