@@ -8,15 +8,15 @@
     },
     {
       "id": "before-junk",
-      "description": "A cluttered garage filled with boxes, old furniture, and miscellaneous junk.",
-      "imageUrl": "https://images.unsplash.com/photo-1604501997347-025aeb7d4479?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjbHV0dGVyZWQlMjBnYXJhZ2V8ZW58MHx8fHwxNzY1NDI1NDIzfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "cluttered garage"
+      "description": "A cluttered room filled with boxes and items before junk removal.",
+      "imageUrl": "https://storage.googleapis.com/project-os-prod-expt/firebase-studio/JUNK-GLADIATORS-JUNK-REMOVAL-WITH-EASE-1024x576.jpg",
+      "imageHint": "cluttered room"
     },
     {
       "id": "after-junk",
-      "description": "A completely empty and clean garage after a thorough cleanout.",
-      "imageUrl": "https://images.unsplash.com/photo-1704786450243-fe590b6bc9d3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZW1wdHklMjBnYXJhZ2V8ZW58MHx8fHwxNzY1NDI1NDIzfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "empty garage"
+      "description": "A clean, empty room with a fireplace after junk removal.",
+      "imageUrl": "https://storage.googleapis.com/project-os-prod-expt/firebase-studio/image.png",
+      "imageHint": "empty room"
     },
     {
       "id": "service-area-map",
