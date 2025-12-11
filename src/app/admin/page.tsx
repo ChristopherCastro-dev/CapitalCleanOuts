@@ -7,8 +7,8 @@ import { collection, getDocs, orderBy, query, Timestamp, doc, updateDoc, deleteD
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { format, isToday } from 'date-fns';
-import { Trash2, Eye, EyeOff, Search, Inbox, ChevronRight, Loader2, RefreshCw } from 'lucide-react';
+import { format } from 'date-fns';
+import { Trash2, Eye, EyeOff, Search, Inbox, ChevronRight, Loader2, RefreshCw, Truck } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -301,13 +301,3 @@ export default function AdminDashboardPage() {
     </div>
   );
 }
-
-const Truck = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
-        <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
-        <path d="M15 18H9" />
-        <path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H15" />
-        <circle cx="6" cy="18" r="2" />
-        <circle cx="17" cy="18" r="2" />
-    </svg>
-);
