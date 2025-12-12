@@ -161,6 +161,7 @@ function MessagesSection({messages,setMessages}:{messages:Message[],setMessages:
 
 function JobsSection({jobs,setJobs}:{jobs:Job[],setJobs:React.Dispatch<React.SetStateAction<Job[]>>}){
   const deleteJob=(id:string)=>setJobs(jobs.filter(j=>j.id!==id));
+  const completeJob=(id:string)=>setJobs(jobs.map(j=>j.id===id?{...j, status: 'Completed'}:j));
 
   const exportCSV = () => {
     let csv = 'Client,Phone,Address,Status,Date,Volume,Price\n';
@@ -189,6 +190,9 @@ function JobsSection({jobs,setJobs}:{jobs:Job[],setJobs:React.Dispatch<React.Set
             {j.price && <p><strong>Est. Price:</strong> {j.price}</p>}
             {j.photo && <Image src={j.photo} alt="Job photo" width={100} height={100} className="rounded-md mt-2" />}
             <div className="flex gap-2 mt-2">
+              {j.status !== 'Completed' && (
+                <Button size="sm" variant="neon-green" onClick={()=>completeJob(j.id)}>Complete</Button>
+              )}
               <Button size="sm" variant="destructive" onClick={()=>deleteJob(j.id)}>Delete</Button>
             </div>
           </CardContent>
@@ -231,6 +235,9 @@ function StatsSection({ jobs }: { jobs: Job[] }) {
     const totalJobs = jobs.length;
     const completedJobs = jobs.filter(j => j.status === 'Completed').length;
     const pendingJobs = jobs.filter(j => j.status === 'Pending').length;
+    const inProgressJobs = jobs.filter(j => j.status === 'In Progress').length;
+    
+    const completedJobsData = jobs.filter(j => j.status === 'Completed');
 
     const StatCard = ({ title, value }: { title: string, value: number | string }) => (
         <div className="flex-1 bg-[#151515] p-4 rounded-lg text-center border-l-4 border-[#1AB16A]">
@@ -245,9 +252,27 @@ function StatsSection({ jobs }: { jobs: Job[] }) {
         <div className="flex flex-col md:flex-row gap-4 mb-4">
             <StatCard title="Total Jobs" value={totalJobs} />
             <StatCard title="Completed Jobs" value={completedJobs} />
-            <StatCard title="Pending Jobs" value={pendingJobs} />
+            <StatCard title="Pending/In Progress" value={pendingJobs + inProgressJobs} />
         </div>
+
+        <h3 className="text-lg font-bold mt-6 mb-2">Completed Jobs Details</h3>
+        {completedJobsData.map(j=>(
+        <Card key={j.id} className="mb-2 bg-[#151515] border-l-4 border-green-500">
+          <CardContent className="p-3 text-sm space-y-1">
+            <p><strong>Client:</strong> {j.clientName}</p>
+            <p><strong>Phone:</strong> {j.clientPhone}</p>
+            <p><strong>Address:</strong> {j.address}</p>
+            <p><strong>Status:</strong> {j.status}</p>
+            <p><strong>Date:</strong> {j.date}</p>
+            {j.junkVolume && <p><strong>Volume:</strong> {j.junkVolume}</p>}
+            {j.price && <p><strong>Est. Price:</strong> {j.price}</p>}
+          </CardContent>
+        </Card>
+      ))}
+
       </div>
     );
 }
+    
+
     
