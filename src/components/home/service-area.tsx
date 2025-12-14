@@ -1,15 +1,13 @@
-import { PlaceHolderImages } from "@/lib/placeholder-images";
-import Image from "next/image";
 import { Check } from "lucide-react";
+import { contactDetails } from "@/lib/constants";
 
-const mapImage = PlaceHolderImages.find(img => img.id === 'service-area-map');
 const serviceLocations = ["Tallahassee", "Florida State University (FSU)", "Florida A&M University (FAMU)", "Surrounding Neighborhoods"];
 
 export default function ServiceArea() {
   return (
     <section className="bg-muted/30">
       <div className="container px-4 md:px-6">
-        <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-12">
+        <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="space-y-4">
             <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
               Serving Tallahassee, FL and Nearby Areas
@@ -28,16 +26,17 @@ export default function ServiceArea() {
               ))}
             </ul>
           </div>
-          {mapImage && (
-            <Image
-                src={mapImage.imageUrl}
-                alt={mapImage.description}
-                data-ai-hint={mapImage.imageHint}
-                width={1280}
-                height={800}
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover object-center sm:w-full"
-            />
-          )}
+          <div className="h-[400px] w-full overflow-hidden rounded-xl">
+            <iframe
+              src={contactDetails.googleMapsEmbed}
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen={false}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
         </div>
       </div>
     </section>
