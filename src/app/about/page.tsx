@@ -2,6 +2,7 @@ import CompanyInfo from "@/components/about/company-info";
 import OurProcess from "@/components/about/our-process";
 import Team from "@/components/about/team";
 import { Separator } from "@/components/ui/separator";
+import PhotoGallery from "@/components/about/photo-gallery";
 
 export default function AboutPage() {
   return (
@@ -11,6 +12,8 @@ export default function AboutPage() {
       <OurProcess />
       <Separator className="my-12 bg-border/20" />
       <Team />
+      <Separator className="my-12 bg-border/20" />
+      <PhotoGallery />
     </div>
   );
 }
