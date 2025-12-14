@@ -24,18 +24,14 @@ export function usePriceCalculator() {
     total: 0,
   });
 
-  const watchedFields = watch([
-    "serviceType",
-    "bedrooms",
-    "bathrooms",
-    "oven",
-    "fridge",
-    "trash",
-  ]);
+  const serviceType = watch("serviceType");
+  const bedrooms = watch("bedrooms");
+  const bathrooms = watch("bathrooms");
+  const oven = watch("oven");
+  const fridge = watch("fridge");
+  const trash = watch("trash");
 
   useEffect(() => {
-    const [serviceType, bedrooms, bathrooms, oven, fridge, trash] = watchedFields;
-
     const basePrice = pricing.base[serviceType as ServiceType] || 0;
     const bedroomsPrice = pricing.bedrooms[bedrooms as Bedrooms] || 0;
     const bathroomsPrice = pricing.bathrooms[bathrooms as Bathrooms] || 0;
@@ -53,7 +49,7 @@ export function usePriceCalculator() {
       total: basePrice + bedroomsPrice + bathroomsPrice + addOnsPrice,
     });
     
-  }, [watchedFields]);
+  }, [serviceType, bedrooms, bathrooms, oven, fridge, trash]);
 
   return breakdown;
 }
