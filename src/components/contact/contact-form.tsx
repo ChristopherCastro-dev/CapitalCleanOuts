@@ -50,11 +50,26 @@ export default function ContactForm() {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    console.log("Form submitted (no backend):", data);
+    // Save to localStorage
+    if (typeof window !== 'undefined') {
+        const messages = JSON.parse(window.localStorage.getItem('messages') || '[]');
+        const newMessage = {
+            id: `msg-${Date.now()}`,
+            name: data.name,
+            email: data.email,
+            phone: data.phone || 'Not provided',
+            message: data.message,
+            timestamp: Date.now(),
+            read: false,
+        };
+        messages.push(newMessage);
+        window.localStorage.setItem('messages', JSON.stringify(messages));
+    }
+
 
     toast({
       title: "Success!",
-      description: "Your message has been sent! We will get back to you soon.",
+      description: "Your message has been sent and added to the dashboard!",
     });
     form.reset();
 

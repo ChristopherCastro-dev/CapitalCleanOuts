@@ -70,11 +70,31 @@ export default function BookingForm() {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    console.log("Form submitted (no backend):", data);
+    // Save to localStorage
+    if (typeof window !== 'undefined') {
+        const jobs = JSON.parse(window.localStorage.getItem('jobs') || '[]');
+        const newJob = {
+            id: `job-${Date.now()}`,
+            clientName: data.name,
+            clientPhone: data.phone,
+            email: data.email,
+            address: data.address,
+            serviceType: data.serviceType,
+            propertyType: data.propertyType,
+            bedrooms: data.bedrooms,
+            bathrooms: data.bathrooms,
+            notes: data.notes || '',
+            status: 'Pending' as const,
+            date: data.preferredDate ? format(data.preferredDate, "PPP") : 'Not specified',
+            timestamp: Date.now(),
+        };
+        jobs.push(newJob);
+        window.localStorage.setItem('jobs', JSON.stringify(jobs));
+    }
 
     toast({
       title: "Thanks!",
-      description: "We'll confirm pricing and availability shortly.",
+      description: "We'll confirm pricing and availability shortly. Your request has been added to the dashboard.",
     });
     form.reset();
 

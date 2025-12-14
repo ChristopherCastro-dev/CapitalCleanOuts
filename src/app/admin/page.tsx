@@ -5,16 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 
-// Mock Data
-const initialJobs = [
-    { id: '1', clientName: 'Alice Johnson', clientPhone: '111-222-3333', email: 'alice@example.com', address: '123 Maple St', serviceType: 'Move-Out Cleaning', propertyType: 'Apartment', bedrooms: '2', bathrooms: '1', notes: 'Has a cat.', status: 'Pending' as const, date: '2024-08-15', timestamp: new Date() },
-    { id: '2', clientName: 'Bob Williams', clientPhone: '444-555-6666', email: 'bob@example.com', address: '456 Oak Ave', serviceType: 'Deep Cleaning', propertyType: 'House', bedrooms: '3', bathrooms: '2', notes: '', status: 'Scheduled' as const, date: '2024-08-16', timestamp: new Date() },
-];
-
-const initialMessages = [
-    { id: '1', name: 'Charlie Brown', email: 'charlie@example.com', phone: '777-888-9999', message: 'How much for a 2-bedroom apartment?', timestamp: new Date(), read: false },
-];
-
 type Job = { 
   id: string, 
   clientName: string, 
@@ -28,11 +18,25 @@ type Job = {
   notes: string,
   status: 'Pending' | 'Scheduled' | 'Completed', 
   date: string, 
-  timestamp: Date, 
+  timestamp: number, 
 };
 
-type Message = { id: string, name: string, email: string, phone: string, message: string, timestamp: Date, read: boolean };
+type Message = { id: string, name: string, email: string, phone: string, message: string, timestamp: number, read: boolean };
 type Customer = { email: string, name: string, phone: string };
+
+// Helper to get data from localStorage
+const getFromStorage = <T,>(key: string, defaultValue: T): T => {
+  if (typeof window === 'undefined') return defaultValue;
+  const item = window.localStorage.getItem(key);
+  return item ? JSON.parse(item) : defaultValue;
+};
+
+// Helper to set data to localStorage
+const setInStorage = <T,>(key: string, value: T) => {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(key, JSON.stringify(value));
+};
+
 
 export default function AdminDashboardPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -76,9 +80,21 @@ export default function AdminDashboardPage() {
 
 function AdminDashboard(){
   const [activeSection, setActiveSection] = useState<'messages'|'jobs'|'customers'|'stats'>('jobs');
-  const [messages, setMessages] = useState<Message[]>(initialMessages);
-  const [jobs, setJobs] = useState<Job[]>(initialJobs);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [completedJobs, setCompletedJobs] = useState<Job[]>([]);
+
+  // Load initial data from localStorage on mount
+  useEffect(() => {
+    setMessages(getFromStorage('messages', []));
+    setJobs(getFromStorage('jobs', []));
+    setCompletedJobs(getFromStorage('completedJobs', []));
+  }, []);
+
+  // Persist data to localStorage on change
+  useEffect(() => { setInStorage('messages', messages) }, [messages]);
+  useEffect(() => { setInStorage('jobs', jobs) }, [jobs]);
+  useEffect(() => { setInStorage('completedJobs', completedJobs) }, [completedJobs]);
 
   const customers = useMemo<Customer[]>(() => {
     const customerMap = new Map<string, Customer>();
@@ -103,7 +119,7 @@ function AdminDashboard(){
   const allJobs = useMemo(() => [...jobs, ...completedJobs], [jobs, completedJobs]);
 
   const handleCompleteJob = (jobToComplete: Job) => {
-    const completedJob = { ...jobToComplete, status: 'Completed' as const, timestamp: new Date() };
+    const completedJob = { ...jobToComplete, status: 'Completed' as const, timestamp: Date.now() };
     setCompletedJobs(prev => [completedJob, ...prev]);
     setJobs(prev => prev.filter(j => j.id !== jobToComplete.id));
   };
@@ -119,7 +135,7 @@ function AdminDashboard(){
         email: job.email,
         phone: job.clientPhone,
         message: `Regarding your cleaning service for ${job.serviceType} at ${job.address} scheduled for ${job.date}.`,
-        timestamp: new Date(),
+        timestamp: Date.now(),
         read: false
     };
     setMessages(prev => [newMessage, ...prev]);
@@ -155,15 +171,18 @@ function AdminDashboard(){
 
 function MessagesSection({messages, onDelete}:{messages:Message[], onDelete: (id: string) => void}){
 
-  const getDisplayDate = (timestamp: Date | number) => {
+  const getDisplayDate = (timestamp: number) => {
     if (!timestamp) return 'No date';
     return new Date(timestamp).toLocaleString();
   }
 
+  const sortedMessages = [...messages].sort((a,b) => b.timestamp - a.timestamp);
+
   return (
     <div>
       <h2 className="text-xl font-bold mb-2">Messages</h2>
-      {messages.map(m=>(
+      {sortedMessages.length === 0 && <p className='text-center text-muted-foreground'>No messages yet.</p>}
+      {sortedMessages.map(m=>(
         <Card key={m.id} className="mb-2">
           <CardContent className="p-3 text-sm space-y-1">
             <p><strong>Name:</strong> {m.name}</p>
@@ -182,12 +201,14 @@ function MessagesSection({messages, onDelete}:{messages:Message[], onDelete: (id
 }
 
 function JobsSection({ jobs, onComplete, onDelete, onSendMessage }: { jobs: Job[], onComplete: (job: Job) => void, onDelete: (id: string) => void, onSendMessage: (job: Job) => void }) {
+  const sortedJobs = [...jobs].sort((a,b) => b.timestamp - a.timestamp);
   return (
     <div>
        <div className="flex justify-between items-center mb-2">
         <h2 className="text-xl font-bold">Active Cleaning Jobs ({jobs.length})</h2>
       </div>
-      {jobs.map(j=>(
+      {sortedJobs.length === 0 && <p className='text-center text-muted-foreground'>No active jobs.</p>}
+      {sortedJobs.map(j=>(
         <Card key={j.id} className="mb-2">
           <CardContent className="p-4 space-y-2 text-sm">
             <div className="flex justify-between items-start">
@@ -221,7 +242,8 @@ function JobsSection({ jobs, onComplete, onDelete, onSendMessage }: { jobs: Job[
 function CustomersSection({ customers }: { customers: Customer[] }) {
     return (
         <div>
-            <h2 className="text-xl font-bold mb-2">Customers</h2>
+            <h2 className="text-xl font-bold mb-2">Customers ({customers.length})</h2>
+            {customers.length === 0 && <p className='text-center text-muted-foreground'>No customers yet.</p>}
             {customers.map(cust => (
                 <Card key={cust.email} className="mb-2">
                     <CardContent className="p-3 text-sm space-y-1">
@@ -239,6 +261,8 @@ function StatsSection({ allJobs, completedJobs }: { allJobs: Job[], completedJob
     const totalJobs = allJobs.length;
     const pendingJobs = allJobs.filter(j => j.status === 'Pending').length;
     const scheduledJobs = allJobs.filter(j => j.status === 'Scheduled').length;
+    
+    const sortedCompleted = [...completedJobs].sort((a,b) => b.timestamp - a.timestamp);
 
     const StatCard = ({ title, value }: { title: string, value: number | string }) => (
         <div className="flex-1 bg-card p-4 rounded-xl text-center border">
@@ -247,7 +271,7 @@ function StatsSection({ allJobs, completedJobs }: { allJobs: Job[], completedJob
         </div>
     );
     
-    const getDisplayDate = (timestamp: Date | number) => {
+    const getDisplayDate = (timestamp: number) => {
         if (!timestamp) return 'No date';
         return new Date(timestamp).toLocaleString();
     }
@@ -256,14 +280,15 @@ function StatsSection({ allJobs, completedJobs }: { allJobs: Job[], completedJob
       <div>
         <h2 className="text-xl font-bold mb-2">Job Overview</h2>
         <div className="flex flex-col md:flex-row gap-4 mb-4">
-            <StatCard title="Total Jobs Today" value={totalJobs} />
+            <StatCard title="Total Jobs" value={totalJobs} />
             <StatCard title="Completed Jobs" value={completedJobs.length} />
             <StatCard title="Pending" value={pendingJobs} />
             <StatCard title="Scheduled" value={scheduledJobs} />
         </div>
 
         <h3 className="text-lg font-bold mt-6 mb-2">Completed Jobs Details</h3>
-        {completedJobs.map(j=>(
+        {sortedCompleted.length === 0 && <p className='text-center text-muted-foreground'>No completed jobs yet.</p>}
+        {sortedCompleted.map(j=>(
         <Card key={j.id} className="mb-2">
           <CardContent className="p-4 space-y-2 text-sm">
              <div className="flex justify-between items-start">
