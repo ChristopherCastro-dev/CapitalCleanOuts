@@ -52,7 +52,7 @@ export default function AdminDashboardPage() {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    if(password==='1234') setIsAuthenticated(true);
+    if(password==='Cmc0536$@!') setIsAuthenticated(true);
     else {
       alert('Incorrect Password');
       setPassword('');

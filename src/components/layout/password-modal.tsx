@@ -19,7 +19,7 @@ type PasswordModalProps = {
   onOpenChange: (isOpen: boolean) => void;
 };
 
-const ADMIN_PASSWORD = '1234';
+const ADMIN_PASSWORD = 'Cmc0536$@!';
 
 export function PasswordModal({ isOpen, onOpenChange }: PasswordModalProps) {
   const [password, setPassword] = useState('');
@@ -82,3 +82,5 @@ export function PasswordModal({ isOpen, onOpenChange }: PasswordModalProps) {
     </Dialog>
   );
 }
+
+    
