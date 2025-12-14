@@ -9,10 +9,10 @@ import { Card } from '@/components/ui/card';
 const placeholderImageUrls = [
     "https://i.ibb.co/bjnLQJDL/Untitled-design.jpg", // Messy kitchen
     "https://i.ibb.co/rVLJVxR/Untitled-design-1.jpg", // Clean kitchen
-    "https://picsum.photos/seed/before2/600/400",
-    "https://picsum.photos/seed/after2/600/400",
-    "https://picsum.photos/seed/before3/600/400",
-    "https://picsum.photos/seed/after3/600/400",
+    "https://i.ibb.co/3fdD0N3/dirty-bathroom.jpg", // Dirty bathroom
+    "https://i.ibb.co/qY0yKq9/clean-bathroom.jpg", // Clean bathroom
+    "https://i.ibb.co/1nCyzcT/messy-living-room.jpg", // Messy living room
+    "https://i.ibb.co/gDFw3M7/clean-living-room.jpg", // Clean living room
 ];
 
 export default function PhotoGallery() {
