@@ -20,8 +20,6 @@ import { Checkbox } from "../ui/checkbox";
 import { pricing } from "@/lib/constants";
 import { usePriceCalculator } from "@/hooks/use-price-calculator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
-import { initializeFirebase } from "@/firebase";
-import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 function SubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
   return (
@@ -65,58 +63,22 @@ export default function BookingForm() {
   const { toast } = useToast();
   const form = useFormContext<BookingFormValues>();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { firestore } = initializeFirebase();
 
   const onSubmit = async (data: BookingFormValues) => {
     setIsSubmitting(true);
-    if (!firestore) {
-        toast({
-            title: "Error",
-            description: "Could not connect to the database. Please try again later.",
-            variant: "destructive",
-        });
-        setIsSubmitting(false);
-        return;
-    }
     
-    try {
-      const newJob = {
-        clientName: data.name,
-        clientPhone: data.phone,
-        email: data.email,
-        address: data.address,
-        serviceType: data.serviceType,
-        propertyType: data.propertyType,
-        bedrooms: data.bedrooms,
-        bathrooms: data.bathrooms,
-        notes: data.notes,
-        oven: data.oven || false,
-        fridge: data.fridge || false,
-        trash: data.trash || false,
-        status: 'Pending' as const,
-        date: data.preferredDate ? format(data.preferredDate, "PPP") : 'Not specified',
-        timestamp: serverTimestamp(),
-      };
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-      const jobsCol = collection(firestore, 'jobs');
-      await addDoc(jobsCol, newJob);
+    console.log("Form submitted (no backend):", data);
 
-      toast({
-        title: "Thanks!",
-        description: "We'll confirm pricing and availability shortly.",
-      });
-      form.reset();
+    toast({
+      title: "Thanks!",
+      description: "We'll confirm pricing and availability shortly.",
+    });
+    form.reset();
 
-    } catch (error) {
-      console.error("Error adding document: ", error);
-      toast({
-        title: "Error",
-        description: "An error occurred while submitting your booking. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
+    setIsSubmitting(false);
   };
 
   return (
@@ -403,5 +365,3 @@ export default function BookingForm() {
     </Card>
   );
 }
-
-    

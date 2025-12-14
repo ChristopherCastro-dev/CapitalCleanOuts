@@ -17,6 +17,12 @@ const INSTANCES = new Map<string, { app: FirebaseApp; auth: Auth; firestore: Fir
  * @returns An object containing the Firebase app, auth, and firestore instances.
  */
 export function initializeFirebase() {
+  // Return null if the config is not set to avoid Firebase errors.
+  if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === 'YOUR_API_KEY') {
+    console.warn("Firebase config is not set. Skipping Firebase initialization.");
+    return { app: null, auth: null, firestore: null, storage: null };
+  }
+  
   const key = JSON.stringify(firebaseConfig);
   if (INSTANCES.has(key)) {
     return INSTANCES.get(key)!;

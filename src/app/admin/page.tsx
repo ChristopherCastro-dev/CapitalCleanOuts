@@ -4,8 +4,16 @@ import { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { initializeFirebase } from '@/firebase';
-import { collection, onSnapshot, doc, setDoc, deleteDoc, orderBy, query, getDoc, Timestamp, addDoc } from 'firebase/firestore';
+
+// Mock Data
+const initialJobs = [
+    { id: '1', clientName: 'Alice Johnson', clientPhone: '111-222-3333', email: 'alice@example.com', address: '123 Maple St', serviceType: 'Move-Out Cleaning', propertyType: 'Apartment', bedrooms: '2', bathrooms: '1', notes: 'Has a cat.', status: 'Pending' as const, date: '2024-08-15', timestamp: new Date() },
+    { id: '2', clientName: 'Bob Williams', clientPhone: '444-555-6666', email: 'bob@example.com', address: '456 Oak Ave', serviceType: 'Deep Cleaning', propertyType: 'House', bedrooms: '3', bathrooms: '2', notes: '', status: 'Scheduled' as const, date: '2024-08-16', timestamp: new Date() },
+];
+
+const initialMessages = [
+    { id: '1', name: 'Charlie Brown', email: 'charlie@example.com', phone: '777-888-9999', message: 'How much for a 2-bedroom apartment?', timestamp: new Date(), read: false },
+];
 
 type Job = { 
   id: string, 
@@ -20,10 +28,10 @@ type Job = {
   notes: string,
   status: 'Pending' | 'Scheduled' | 'Completed', 
   date: string, 
-  timestamp: Timestamp, 
+  timestamp: Date, 
 };
 
-type Message = { id: string, name: string, email: string, phone: string, message: string, timestamp: Timestamp, read: boolean };
+type Message = { id: string, name: string, email: string, phone: string, message: string, timestamp: Date, read: boolean };
 type Customer = { email: string, name: string, phone: string };
 
 export default function AdminDashboardPage() {
@@ -68,53 +76,9 @@ export default function AdminDashboardPage() {
 
 function AdminDashboard(){
   const [activeSection, setActiveSection] = useState<'messages'|'jobs'|'customers'|'stats'>('jobs');
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [jobs, setJobs] = useState<Job[]>([]);
+  const [messages, setMessages] = useState<Message[]>(initialMessages);
+  const [jobs, setJobs] = useState<Job[]>(initialJobs);
   const [completedJobs, setCompletedJobs] = useState<Job[]>([]);
-  const { firestore } = initializeFirebase();
-
-  // Listen for jobs
-  useEffect(() => {
-    if (!firestore) return;
-    const jobsCol = collection(firestore, "jobs");
-    const q = query(jobsCol, orderBy("timestamp", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const jobsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Job));
-      setJobs(jobsData);
-    }, (error) => {
-      console.error("Error fetching jobs: ", error);
-    });
-    return () => unsubscribe();
-  }, [firestore]);
-
-  // Listen for completed jobs
-  useEffect(() => {
-    if (!firestore) return;
-    const completedCol = collection(firestore, "completedJobs");
-    const q = query(completedCol, orderBy("timestamp", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const completedJobsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Job));
-      setCompletedJobs(completedJobsData);
-    }, (error) => {
-      console.error("Error fetching completed jobs: ", error);
-    });
-    return () => unsubscribe();
-  }, [firestore]);
-
-  // Listen for messages
-  useEffect(() => {
-    if (!firestore) return;
-    const messagesCol = collection(firestore, "messages");
-    const q = query(messagesCol, orderBy("timestamp", "desc"));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const messagesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message));
-      setMessages(messagesData);
-    }, (error) => {
-      console.error("Error fetching messages: ", error);
-    });
-    return () => unsubscribe();
-  }, [firestore]);
-
 
   const customers = useMemo<Customer[]>(() => {
     const customerMap = new Map<string, Customer>();
@@ -138,6 +102,34 @@ function AdminDashboard(){
 
   const allJobs = useMemo(() => [...jobs, ...completedJobs], [jobs, completedJobs]);
 
+  const handleCompleteJob = (jobToComplete: Job) => {
+    const completedJob = { ...jobToComplete, status: 'Completed' as const, timestamp: new Date() };
+    setCompletedJobs(prev => [completedJob, ...prev]);
+    setJobs(prev => prev.filter(j => j.id !== jobToComplete.id));
+  };
+
+  const handleDeleteJob = (jobId: string) => {
+    setJobs(prev => prev.filter(j => j.id !== jobId));
+  };
+
+  const handleSendMessage = (job: Job) => {
+    const newMessage = {
+        id: `msg-${Date.now()}`,
+        name: job.clientName,
+        email: job.email,
+        phone: job.clientPhone,
+        message: `Regarding your cleaning service for ${job.serviceType} at ${job.address} scheduled for ${job.date}.`,
+        timestamp: new Date(),
+        read: false
+    };
+    setMessages(prev => [newMessage, ...prev]);
+    alert(`Message created for ${job.clientName}. Check the messages tab.`);
+  };
+
+  const handleDeleteMessage = (messageId: string) => {
+    setMessages(prev => prev.filter(m => m.id !== messageId));
+  }
+
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4">
@@ -152,8 +144,8 @@ function AdminDashboard(){
       </nav>
 
       <main>
-        {activeSection==='messages' && <MessagesSection messages={messages} />}
-        {activeSection==='jobs' && <JobsSection jobs={jobs} />}
+        {activeSection==='messages' && <MessagesSection messages={messages} onDelete={handleDeleteMessage} />}
+        {activeSection==='jobs' && <JobsSection jobs={jobs} onComplete={handleCompleteJob} onDelete={handleDeleteJob} onSendMessage={handleSendMessage} />}
         {activeSection==='customers' && <CustomersSection customers={customers} />}
         {activeSection==='stats' && <StatsSection allJobs={allJobs} completedJobs={completedJobs} />}
       </main>
@@ -161,19 +153,10 @@ function AdminDashboard(){
   );
 }
 
-function MessagesSection({messages}:{messages:Message[]}){
-  const { firestore } = initializeFirebase();
+function MessagesSection({messages, onDelete}:{messages:Message[], onDelete: (id: string) => void}){
 
-  const deleteMsg = async (id:string) => {
-    if(!firestore) return;
-    await deleteDoc(doc(firestore, "messages", id));
-  };
-
-  const getDisplayDate = (timestamp: Timestamp | number) => {
+  const getDisplayDate = (timestamp: Date | number) => {
     if (!timestamp) return 'No date';
-    if (timestamp instanceof Timestamp) {
-      return timestamp.toDate().toLocaleString();
-    }
     return new Date(timestamp).toLocaleString();
   }
 
@@ -189,7 +172,7 @@ function MessagesSection({messages}:{messages:Message[]}){
             <p><strong>Message:</strong> {m.message}</p>
             <p className="text-xs text-muted-foreground"><strong>Date:</strong> {getDisplayDate(m.timestamp)}</p>
             <div className="flex gap-2 mt-2">
-              <Button size="sm" variant="destructive" onClick={()=>deleteMsg(m.id)}>Delete</Button>
+              <Button size="sm" variant="destructive" onClick={()=>onDelete(m.id)}>Delete</Button>
             </div>
           </CardContent>
         </Card>
@@ -198,38 +181,7 @@ function MessagesSection({messages}:{messages:Message[]}){
   );
 }
 
-function JobsSection({ jobs }: { jobs: Job[] }) {
-    const { firestore } = initializeFirebase();
-
-    const deleteJob = async (id: string) => {
-        if (!firestore) return;
-        await deleteDoc(doc(firestore, "jobs", id));
-    };
-
-    const completeJob = async (job: Job) => {
-        if (!firestore) return;
-        const { id, ...jobData } = job;
-        const completedJobData = { ...jobData, status: 'Completed' as const, timestamp: Timestamp.now() };
-        await setDoc(doc(firestore, "completedJobs", id), completedJobData);
-        await deleteDoc(doc(firestore, "jobs", id));
-    };
-
-    const sendMessage = async (job: Job) => {
-        if (!firestore) return;
-        const messageData = {
-            name: job.clientName,
-            email: job.email,
-            phone: job.clientPhone,
-            message: `Regarding your cleaning service for ${job.serviceType} at ${job.address} scheduled for ${job.date}.`,
-            timestamp: Timestamp.now(),
-            read: false
-        };
-        
-        await addDoc(collection(firestore, "messages"), messageData);
-        alert(`Message created for ${job.clientName}. Check the messages tab.`);
-    };
-
-
+function JobsSection({ jobs, onComplete, onDelete, onSendMessage }: { jobs: Job[], onComplete: (job: Job) => void, onDelete: (id: string) => void, onSendMessage: (job: Job) => void }) {
   return (
     <div>
        <div className="flex justify-between items-center mb-2">
@@ -255,9 +207,9 @@ function JobsSection({ jobs }: { jobs: Job[] }) {
               {j.notes && <p><strong>Notes:</strong> {j.notes}</p>}
             </div>
             <div className="flex gap-2 mt-2">
-              <Button size="sm" className="complete" onClick={() => completeJob(j)}>Complete</Button>
-              <Button size="sm" className="send" onClick={() => sendMessage(j)}>Send Message</Button>
-              <Button size="sm" variant="destructive" onClick={()=>deleteJob(j.id)}>Delete</Button>
+              <Button size="sm" className="complete" onClick={() => onComplete(j)}>Complete</Button>
+              <Button size="sm" className="send" onClick={() => onSendMessage(j)}>Send Message</Button>
+              <Button size="sm" variant="destructive" onClick={()=>onDelete(j.id)}>Delete</Button>
             </div>
           </CardContent>
         </Card>
@@ -295,11 +247,8 @@ function StatsSection({ allJobs, completedJobs }: { allJobs: Job[], completedJob
         </div>
     );
     
-    const getDisplayDate = (timestamp: Timestamp | number) => {
+    const getDisplayDate = (timestamp: Date | number) => {
         if (!timestamp) return 'No date';
-        if (timestamp instanceof Timestamp) {
-          return timestamp.toDate().toLocaleString();
-        }
         return new Date(timestamp).toLocaleString();
     }
 
@@ -337,5 +286,3 @@ function StatsSection({ allJobs, completedJobs }: { allJobs: Job[], completedJob
       </div>
     );
 }
-
-    
