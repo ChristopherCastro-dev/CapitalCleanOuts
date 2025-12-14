@@ -5,11 +5,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Sparkles } from "lucide-react";
+import { Menu } from "lucide-react";
 import { navLinks } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { AdminTrigger } from "./admin-trigger";
+import Image from "next/image";
 
 export default function Header() {
   const pathname = usePathname();
@@ -33,7 +34,7 @@ export default function Header() {
         <div className="container flex h-20 items-center justify-between px-4 md:px-6">
           <div className="relative">
             <Link href="/" className="flex items-center gap-2 font-headline text-2xl font-bold">
-              <Sparkles className="h-7 w-7 text-primary" />
+               <Image src="https://i.ibb.co/tp55SGfr/Untitled-design.png" alt="Capital CleanOuts Logo" width={32} height={32} className="h-8 w-8" />
               <span className={cn(isScrolled ? 'text-foreground' : 'text-white')}>Capital CleanOuts</span>
             </Link>
             <AdminTrigger />
@@ -67,7 +68,7 @@ export default function Header() {
             <SheetContent side="right" className="w-full max-w-xs bg-background">
               <div className="flex flex-col p-6">
                   <Link href="/" className="flex items-center gap-2 font-headline text-2xl font-bold mb-8" onClick={() => setIsOpen(false)}>
-                      <Sparkles className="h-7 w-7 text-primary" />
+                      <Image src="https://i.ibb.co/tp55SGfr/Untitled-design.png" alt="Capital CleanOuts Logo" width={32} height={32} className="h-8 w-8" />
                       <span>Capital CleanOuts</span>
                   </Link>
                 <nav className="flex flex-col gap-6">

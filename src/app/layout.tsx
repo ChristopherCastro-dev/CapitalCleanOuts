@@ -9,6 +9,9 @@ export const metadata: Metadata = {
   title: 'Move-Out Cleaning in Tallahassee | Capital CleanOuts',
   description: 'Flat-rate move-out and deep cleaning services in Tallahassee. Fast availability for apartments, homes, and rentals.',
   keywords: 'move-out cleaning tallahassee, deep cleaning, apartment cleaning, rental cleaning, capital cleanouts',
+  icons: {
+    icon: 'https://i.ibb.co/tp55SGfr/Untitled-design.png',
+  },
 };
 
 export default function RootLayout({
