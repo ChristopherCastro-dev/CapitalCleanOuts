@@ -4,25 +4,26 @@ import { useEffect, useState, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import Image from 'next/image';
+import { initializeFirebase } from '@/firebase';
+import { collection, onSnapshot, doc, setDoc, deleteDoc, orderBy, query, getDoc } from 'firebase/firestore';
 
 type Job = { 
-  id:string, 
-  clientName:string, 
-  clientPhone:string, 
+  id: string, 
+  clientName: string, 
+  clientPhone: string, 
   email: string,
-  address:string, 
+  address: string, 
   serviceType: string,
   propertyType: string,
   bedrooms: string,
   bathrooms: string,
   notes: string,
-  status:'Pending'|'Scheduled'|'Completed', 
-  date:string, 
-  timestamp:number, 
+  status: 'Pending' | 'Scheduled' | 'Completed', 
+  date: string, 
+  timestamp: number, 
 };
 
-type Message = { id:string, name:string, email:string, phone:string, message:string, timestamp:number, read:boolean };
+type Message = { id: string, name: string, email: string, phone: string, message: string, timestamp: number, read: boolean };
 type Customer = { email: string, name: string, phone: string };
 
 export default function AdminDashboardPage() {
@@ -66,40 +67,48 @@ export default function AdminDashboardPage() {
 }
 
 function AdminDashboard(){
-  const [activeSection,setActiveSection] = useState<'messages'|'jobs'|'customers'|'stats'>('jobs');
-  const [messages,setMessages] = useState<Message[]>([]);
-  const [jobs,setJobs] = useState<Job[]>([]);
+  const [activeSection, setActiveSection] = useState<'messages'|'jobs'|'customers'|'stats'>('jobs');
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
+  const [completedJobs, setCompletedJobs] = useState<Job[]>([]);
+  const { firestore } = initializeFirebase();
 
-  useEffect(()=>{
-    const loadData = () => {
-      setMessages(JSON.parse(localStorage.getItem('messages') || '[]'));
-      setJobs(JSON.parse(localStorage.getItem('jobs') || '[]'));
-    };
-
-    loadData();
-
-    window.addEventListener('messages-updated', loadData);
-    window.addEventListener('jobs-updated', loadData);
-    window.addEventListener('storage', loadData);
-
-    return ()=>{
-      window.removeEventListener('messages-updated', loadData);
-      window.removeEventListener('jobs-updated', loadData);
-      window.removeEventListener('storage', loadData);
-    }
-  },[]);
-  
+  // Listen for jobs
   useEffect(() => {
-    if (jobs.length > 0 || JSON.parse(localStorage.getItem('jobs') || '[]').length > 0) {
-      localStorage.setItem('jobs', JSON.stringify(jobs));
-    }
-  }, [jobs]);
+    if (!firestore) return;
+    const jobsCol = collection(firestore, "jobs");
+    const q = query(jobsCol, orderBy("timestamp", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const jobsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Job));
+      setJobs(jobsData);
+    });
+    return () => unsubscribe();
+  }, [firestore]);
 
+  // Listen for completed jobs
   useEffect(() => {
-    if (messages.length > 0 || JSON.parse(localStorage.getItem('messages') || '[]').length > 0) {
-      localStorage.setItem('messages', JSON.stringify(messages));
-    }
-  }, [messages]);
+    if (!firestore) return;
+    const completedCol = collection(firestore, "completedJobs");
+    const q = query(completedCol, orderBy("timestamp", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const completedJobsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Job));
+      setCompletedJobs(completedJobsData);
+    });
+    return () => unsubscribe();
+  }, [firestore]);
+
+  // Listen for messages
+  useEffect(() => {
+    if (!firestore) return;
+    const messagesCol = collection(firestore, "messages");
+    const q = query(messagesCol, orderBy("timestamp", "desc"));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const messagesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message));
+      setMessages(messagesData);
+    });
+    return () => unsubscribe();
+  }, [firestore]);
+
 
   const customers = useMemo<Customer[]>(() => {
     const customerMap = new Map<string, Customer>();
@@ -113,8 +122,16 @@ function AdminDashboard(){
             customerMap.set(j.email, {name: j.clientName, email: j.email, phone: j.clientPhone});
         }
     })
+    completedJobs.forEach(j => {
+        if(j.email && !customerMap.has(j.email)) {
+            customerMap.set(j.email, {name: j.clientName, email: j.email, phone: j.clientPhone});
+        }
+    })
     return Array.from(customerMap.values());
-  }, [messages, jobs]);
+  }, [messages, jobs, completedJobs]);
+
+  const allJobs = useMemo(() => [...jobs, ...completedJobs], [jobs, completedJobs]);
+
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4">
@@ -122,46 +139,35 @@ function AdminDashboard(){
         <h1 className="font-headline text-2xl text-center font-bold text-foreground">Capital CleanOuts Dashboard</h1>
       </header>
       <nav className="flex flex-wrap gap-2 justify-center mb-4">
-        <Button variant={activeSection === 'jobs' ? 'default' : 'outline'} onClick={()=>setActiveSection('jobs')}>Cleaning Jobs</Button>
-        <Button variant={activeSection === 'messages' ? 'default' : 'outline'} onClick={()=>setActiveSection('messages')}>Messages</Button>
+        <Button variant={activeSection === 'jobs' ? 'default' : 'outline'} onClick={()=>setActiveSection('jobs')}>Cleaning Jobs ({jobs.length})</Button>
+        <Button variant={activeSection === 'messages' ? 'default' : 'outline'} onClick={()=>setActiveSection('messages')}>Messages ({messages.length})</Button>
         <Button variant={activeSection === 'customers' ? 'default' : 'outline'} onClick={()=>setActiveSection('customers')}>Customers</Button>
         <Button variant={activeSection === 'stats' ? 'default' : 'outline'} onClick={()=>setActiveSection('stats')}>Job Overview</Button>
       </nav>
 
       <main>
-        {activeSection==='messages' && <MessagesSection messages={messages} setMessages={setMessages} />}
-        {activeSection==='jobs' && <JobsSection jobs={jobs} setJobs={setJobs} />}
+        {activeSection==='messages' && <MessagesSection messages={messages} />}
+        {activeSection==='jobs' && <JobsSection jobs={jobs} />}
         {activeSection==='customers' && <CustomersSection customers={customers} />}
-        {activeSection==='stats' && <StatsSection jobs={jobs} setJobs={setJobs} />}
+        {activeSection==='stats' && <StatsSection allJobs={allJobs} completedJobs={completedJobs} />}
       </main>
     </div>
   );
 }
 
-function MessagesSection({messages,setMessages}:{messages:Message[],setMessages:React.Dispatch<React.SetStateAction<Message[]>>}){
-  const toggleRead=(id:string)=>setMessages(messages.map(m=>m.id===id?{...m,read:!m.read}:m));
-  const deleteMsg=(id:string)=>setMessages(messages.filter(m=>m.id!==id));
+function MessagesSection({messages}:{messages:Message[]}){
+  const { firestore } = initializeFirebase();
 
-  const exportCSV = () => {
-    let csv = 'Name,Email,Phone,Message,Date\n';
-    messages.forEach(m => {
-        const message = m.message.replace(/,/g, '');
-        csv += `${m.name},${m.email},${m.phone},"${message}",${new Date(m.timestamp).toLocaleString()}\n`
-    });
-    const a = document.createElement('a');
-    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-    a.download = 'messages.csv';
-    a.click();
-  }
+  const deleteMsg = async (id:string) => {
+    if(!firestore) return;
+    await deleteDoc(doc(firestore, "messages", id));
+  };
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-xl font-bold">Messages</h2>
-        <Button onClick={exportCSV} variant="outline" size="sm">Export CSV</Button>
-      </div>
+      <h2 className="text-xl font-bold mb-2">Messages</h2>
       {messages.map(m=>(
-        <Card key={m.id} className={`mb-2 ${m.read?'opacity-60':''}`}>
+        <Card key={m.id} className="mb-2">
           <CardContent className="p-3 text-sm space-y-1">
             <p><strong>Name:</strong> {m.name}</p>
             <p><strong>Email:</strong> {m.email}</p>
@@ -169,7 +175,6 @@ function MessagesSection({messages,setMessages}:{messages:Message[],setMessages:
             <p><strong>Message:</strong> {m.message}</p>
             <p className="text-xs text-muted-foreground"><strong>Date:</strong> {new Date(m.timestamp).toLocaleString()}</p>
             <div className="flex gap-2 mt-2">
-              <Button size="sm" variant="secondary" onClick={()=>toggleRead(m.id)}>{m.read?'Mark Unread':'Mark Read'}</Button>
               <Button size="sm" variant="destructive" onClick={()=>deleteMsg(m.id)}>Delete</Button>
             </div>
           </CardContent>
@@ -179,31 +184,50 @@ function MessagesSection({messages,setMessages}:{messages:Message[],setMessages:
   );
 }
 
-function JobsSection({jobs,setJobs}:{jobs:Job[],setJobs:React.Dispatch<React.SetStateAction<Job[]>>}){
-  const activeJobs = jobs.filter(j => j.status !== 'Completed');
+function JobsSection({ jobs }: { jobs: Job[] }) {
+    const { firestore } = initializeFirebase();
 
-  const deleteJob=(id:string)=>setJobs(jobs.filter(j=>j.id!==id));
-  const updateJobStatus = (id: string, status: 'Pending' | 'Scheduled' | 'Completed') => {
-    setJobs(jobs.map(j => j.id === id ? { ...j, status } : j));
-  };
-  
+    const deleteJob = async (id: string) => {
+        if (!firestore) return;
+        await deleteDoc(doc(firestore, "jobs", id));
+    };
 
-  const exportCSV = () => {
-    let csv = 'Job Type,Property Type,Bedrooms,Bathrooms,Client Name,Address,Date,Status\n';
-    activeJobs.forEach(j => csv += `${j.serviceType},${j.propertyType},${j.bedrooms},${j.bathrooms},${j.clientName},"${j.address}",${j.date},${j.status}\n`);
-    const a = document.createElement('a');
-    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-    a.download = 'active_jobs.csv';
-    a.click();
-  }
+    const completeJob = async (job: Job) => {
+        if (!firestore) return;
+        const jobData = { ...job, status: 'Completed' as const };
+        await setDoc(doc(firestore, "completedJobs", job.id), jobData);
+        await deleteDoc(doc(firestore, "jobs", job.id));
+    };
+
+    const sendMessage = async (job: Job) => {
+        if (!firestore) return;
+        const messageData = {
+            id: `msg_${job.id}`,
+            name: job.clientName,
+            email: job.email,
+            phone: job.clientPhone,
+            message: `Regarding your cleaning service for ${job.serviceType} at ${job.address} scheduled for ${job.date}.`,
+            timestamp: Date.now(),
+            read: false
+        };
+        const messageRef = doc(firestore, "messages", messageData.id);
+        const docSnap = await getDoc(messageRef);
+
+        if(!docSnap.exists()){
+            await setDoc(messageRef, messageData);
+            alert(`Message started for ${job.clientName}. Check the messages tab.`);
+        } else {
+            alert(`A message for this job already exists.`);
+        }
+    };
+
 
   return (
     <div>
        <div className="flex justify-between items-center mb-2">
-        <h2 className="text-xl font-bold">Active Cleaning Jobs ({activeJobs.length})</h2>
-        <Button onClick={exportCSV} variant="outline" size="sm">Export CSV</Button>
+        <h2 className="text-xl font-bold">Active Cleaning Jobs ({jobs.length})</h2>
       </div>
-      {activeJobs.map(j=>(
+      {jobs.map(j=>(
         <Card key={j.id} className="mb-2">
           <CardContent className="p-4 space-y-2 text-sm">
             <div className="flex justify-between items-start">
@@ -223,13 +247,8 @@ function JobsSection({jobs,setJobs}:{jobs:Job[],setJobs:React.Dispatch<React.Set
               {j.notes && <p><strong>Notes:</strong> {j.notes}</p>}
             </div>
             <div className="flex gap-2 mt-2">
-              {j.status === 'Pending' && (
-                <Button size="sm" variant="secondary" onClick={()=>updateJobStatus(j.id, 'Scheduled')}>Mark Scheduled</Button>
-              )}
-               {j.status === 'Scheduled' && (
-                <Button size="sm" variant="secondary" onClick={()=>updateJobStatus(j.id, 'Pending')}>Mark Pending</Button>
-              )}
-              <Button size="sm" variant="default" onClick={()=>updateJobStatus(j.id, 'Completed')}>Complete</Button>
+              <Button size="sm" className="complete" onClick={() => completeJob(j)}>Complete</Button>
+              <Button size="sm" className="send" onClick={() => sendMessage(j)}>Send Message</Button>
               <Button size="sm" variant="destructive" onClick={()=>deleteJob(j.id)}>Delete</Button>
             </div>
           </CardContent>
@@ -240,21 +259,9 @@ function JobsSection({jobs,setJobs}:{jobs:Job[],setJobs:React.Dispatch<React.Set
 }
 
 function CustomersSection({ customers }: { customers: Customer[] }) {
-    const exportCSV = () => {
-        let csv = 'Name,Email,Phone\n';
-        customers.forEach(c => csv += `${c.name},${c.email},${c.phone}\n`);
-        const a = document.createElement('a');
-        a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-        a.download = 'customers.csv';
-        a.click();
-    }
-
     return (
         <div>
-            <div className="flex justify-between items-center mb-2">
-                <h2 className="text-xl font-bold">Customers</h2>
-                <Button onClick={exportCSV} variant="outline" size="sm">Export CSV</Button>
-            </div>
+            <h2 className="text-xl font-bold mb-2">Customers</h2>
             {customers.map(cust => (
                 <Card key={cust.email} className="mb-2">
                     <CardContent className="p-3 text-sm space-y-1">
@@ -268,17 +275,10 @@ function CustomersSection({ customers }: { customers: Customer[] }) {
     );
 }
 
-function StatsSection({ jobs, setJobs }: { jobs: Job[], setJobs: React.Dispatch<React.SetStateAction<Job[]>>}) {
-    const totalJobs = jobs.length;
-    const completedJobs = jobs.filter(j => j.status === 'Completed').length;
-    const pendingJobs = jobs.filter(j => j.status === 'Pending').length;
-    const scheduledJobs = jobs.filter(j => j.status === 'Scheduled').length;
-    
-    const completedJobsData = jobs.filter(j => j.status === 'Completed');
-
-    const updateJobStatus = (id: string, status: 'Pending' | 'Scheduled' | 'Completed') => {
-        setJobs(jobs.map(j => j.id === id ? { ...j, status } : j));
-    };
+function StatsSection({ allJobs, completedJobs }: { allJobs: Job[], completedJobs: Job[]}) {
+    const totalJobs = allJobs.length;
+    const pendingJobs = allJobs.filter(j => j.status === 'Pending').length;
+    const scheduledJobs = allJobs.filter(j => j.status === 'Scheduled').length;
 
     const StatCard = ({ title, value }: { title: string, value: number | string }) => (
         <div className="flex-1 bg-card p-4 rounded-xl text-center border">
@@ -292,13 +292,13 @@ function StatsSection({ jobs, setJobs }: { jobs: Job[], setJobs: React.Dispatch<
         <h2 className="text-xl font-bold mb-2">Job Overview</h2>
         <div className="flex flex-col md:flex-row gap-4 mb-4">
             <StatCard title="Total Jobs" value={totalJobs} />
-            <StatCard title="Completed Jobs" value={completedJobs} />
+            <StatCard title="Completed Jobs" value={completedJobs.length} />
             <StatCard title="Pending" value={pendingJobs} />
             <StatCard title="Scheduled" value={scheduledJobs} />
         </div>
 
         <h3 className="text-lg font-bold mt-6 mb-2">Completed Jobs Details</h3>
-        {completedJobsData.map(j=>(
+        {completedJobs.map(j=>(
         <Card key={j.id} className="mb-2">
           <CardContent className="p-4 space-y-2 text-sm">
              <div className="flex justify-between items-start">
@@ -315,13 +315,11 @@ function StatsSection({ jobs, setJobs }: { jobs: Job[], setJobs: React.Dispatch<
               <p><strong>Job:</strong> {j.serviceType} ({j.propertyType})</p>
               <p><strong>Size:</strong> {j.bedrooms} Bed, {j.bathrooms} Bath</p>
             </div>
-            <div className="flex gap-2 mt-2">
-              <Button size="sm" variant="secondary" onClick={()=>updateJobStatus(j.id, 'Pending')}>Uncomplete</Button>
-            </div>
           </CardContent>
         </Card>
       ))}
-
       </div>
     );
 }
+
+    

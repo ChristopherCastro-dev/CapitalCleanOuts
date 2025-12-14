@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Calendar as CalendarIcon, Loader2, Refrigerator, Trash2, HelpCircle } from "lucide-react";
+import { Calendar as CalendarIcon, Loader2, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { BookingFormValues } from "@/lib/schemas";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -20,6 +20,8 @@ import { Checkbox } from "../ui/checkbox";
 import { pricing } from "@/lib/constants";
 import { usePriceCalculator } from "@/hooks/use-price-calculator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
+import { initializeFirebase } from "@/firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 function SubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
   return (
@@ -63,13 +65,22 @@ export default function BookingForm() {
   const { toast } = useToast();
   const form = useFormContext<BookingFormValues>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { firestore } = initializeFirebase();
 
-  const onSubmit = (data: BookingFormValues) => {
+  const onSubmit = async (data: BookingFormValues) => {
     setIsSubmitting(true);
+    if (!firestore) {
+        toast({
+            title: "Error",
+            description: "Could not connect to the database. Please try again later.",
+            variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+    }
+    
     try {
-      const existingJobs = JSON.parse(localStorage.getItem('jobs') || '[]');
       const newJob = {
-        id: `job_${Date.now()}`,
         clientName: data.name,
         clientPhone: data.phone,
         email: data.email,
@@ -82,15 +93,13 @@ export default function BookingForm() {
         oven: data.oven,
         fridge: data.fridge,
         trash: data.trash,
-        status: 'Pending',
+        status: 'Pending' as const,
         date: data.preferredDate ? format(data.preferredDate, "yyyy-MM-dd") : 'Not specified',
         timestamp: Date.now(),
       };
 
-      const updatedJobs = [newJob, ...existingJobs];
-      localStorage.setItem('jobs', JSON.stringify(updatedJobs));
-
-      window.dispatchEvent(new Event('jobs-updated'));
+      const jobsCol = collection(firestore, 'jobs');
+      await addDoc(jobsCol, newJob);
 
       toast({
         title: "Thanks!",
@@ -104,7 +113,7 @@ export default function BookingForm() {
         description: "An error occurred while submitting your booking. Please try again.",
         variant: "destructive",
       });
-      console.error("Failed to save job to localStorage", error);
+      console.error("Failed to save job to Firestore", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -394,3 +403,5 @@ export default function BookingForm() {
     </Card>
   );
 }
+
+    

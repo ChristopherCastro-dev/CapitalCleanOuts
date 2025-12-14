@@ -20,6 +20,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { initializeFirebase } from "@/firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -33,6 +35,7 @@ type ContactFormValues = z.infer<typeof formSchema>;
 export default function ContactForm() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { firestore } = initializeFirebase();
   
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(formSchema),
@@ -44,13 +47,21 @@ export default function ContactForm() {
     },
   });
 
-  const onSubmit = (data: ContactFormValues) => {
+  const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
 
+     if (!firestore) {
+        toast({
+            title: "Error",
+            description: "Could not connect to the database. Please try again later.",
+            variant: "destructive",
+        });
+        setIsSubmitting(false);
+        return;
+    }
+
     try {
-      const existingMessages = JSON.parse(localStorage.getItem('messages') || '[]');
       const newMessage = {
-        id: `msg_${Date.now()}`,
         name: data.name,
         email: data.email,
         phone: data.phone || '', // Ensure phone is always a string
@@ -59,11 +70,8 @@ export default function ContactForm() {
         read: false
       };
       
-      const updatedMessages = [newMessage, ...existingMessages];
-      localStorage.setItem('messages', JSON.stringify(updatedMessages));
-
-      // Dispatch custom event so dashboard can auto-update
-      window.dispatchEvent(new Event('messages-updated'));
+      const messagesCol = collection(firestore, 'messages');
+      await addDoc(messagesCol, newMessage);
       
       toast({
         title: "Success!",
@@ -77,7 +85,7 @@ export default function ContactForm() {
         description: "An error occurred while sending your message. Please try again later.",
         variant: "destructive",
       });
-      console.error("Failed to save message to localStorage", error);
+      console.error("Failed to save message to Firestore", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -154,4 +162,5 @@ export default function ContactForm() {
     </Card>
   );
 }
+
     
