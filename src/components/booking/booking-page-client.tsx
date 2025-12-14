@@ -20,6 +20,9 @@ export function BookingPageClient() {
       propertyType: "Apartment",
       bedrooms: "1",
       bathrooms: "1",
+      oven: false,
+      fridge: false,
+      trash: false,
     },
   });
 

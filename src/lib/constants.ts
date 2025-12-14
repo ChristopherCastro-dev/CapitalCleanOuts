@@ -51,4 +51,35 @@ export const itHelpDetails = {
     phoneDisplay: "(305) 778-9397",
 };
 
+export const pricing = {
+  base: {
+    "Move-Out Cleaning": 150,
+    "Deep Cleaning": 120,
+    "Apartment Turnover": 140,
+    "Office Cleaning": 100,
+  },
+  bedrooms: {
+    "Studio": 0,
+    "1": 20,
+    "2": 40,
+    "3": 60,
+    "4+": 80,
+  },
+  bathrooms: {
+    "1": 15,
+    "2": 30,
+    "3+": 45,
+  },
+  addOns: {
+    oven: 25,
+    fridge: 25,
+    trash: 35,
+  },
+};
+
+export type ServiceType = keyof typeof pricing.base;
+export type Bedrooms = keyof typeof pricing.bedrooms;
+export type Bathrooms = keyof typeof pricing.bathrooms;
+
+
 export const truckSizes = []; // Removed as it's no longer relevant

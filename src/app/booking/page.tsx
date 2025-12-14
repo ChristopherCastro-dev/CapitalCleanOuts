@@ -12,7 +12,7 @@ export default function BookingPage() {
               Book Your Cleaning
             </h1>
             <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-              Fill out the form below to get a quote and schedule your service.
+              Use our estimator to get a price and schedule your service in minutes.
             </p>
           </div>
         </div>

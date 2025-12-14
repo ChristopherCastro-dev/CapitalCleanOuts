@@ -5,17 +5,21 @@ import { useFormContext } from "react-hook-form";
 import { useState } from "react";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
-import { Calendar as CalendarIcon, Loader2 } from "lucide-react";
+import { Calendar as CalendarIcon, Loader2, Refrigerator, Trash2, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import type { BookingFormValues } from "@/lib/schemas";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "../ui/textarea";
+import { Checkbox } from "../ui/checkbox";
+import { pricing } from "@/lib/constants";
+import { usePriceCalculator } from "@/hooks/use-price-calculator";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 
 function SubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
   return (
@@ -25,6 +29,35 @@ function SubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
     </Button>
   );
 }
+
+function PriceEstimator() {
+    const { base, bedrooms, bathrooms, addOns, total } = usePriceCalculator();
+  
+    const formatCurrency = (amount: number) =>
+      amount.toLocaleString("en-US", { style: "currency", currency: "USD", minimumFractionDigits: 0 });
+  
+    if (total === 0) return null;
+  
+    return (
+      <div className="mt-8 rounded-lg bg-muted p-6">
+        <h3 className="font-headline text-xl font-semibold mb-4">Estimated Price</h3>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between"><span>Base Service:</span> <span>{formatCurrency(base)}</span></div>
+          {bedrooms > 0 && <div className="flex justify-between"><span>Bedrooms:</span> <span>+ {formatCurrency(bedrooms)}</span></div>}
+          {bathrooms > 0 && <div className="flex justify-between"><span>Bathrooms:</span> <span>+ {formatCurrency(bathrooms)}</span></div>}
+          {addOns > 0 && <div className="flex justify-between"><span>Add-Ons:</span> <span>+ {formatCurrency(addOns)}</span></div>}
+          <div className="border-t border-border/50 my-2"></div>
+          <div className="flex justify-between text-lg font-bold text-primary">
+            <span>Total Estimate:</span>
+            <span>{formatCurrency(total)}</span>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mt-4">
+          This is an estimate. We will confirm the final price with you.
+        </p>
+      </div>
+    );
+  }
 
 export default function BookingForm() {
   const { toast } = useToast();
@@ -46,6 +79,9 @@ export default function BookingForm() {
         bedrooms: data.bedrooms,
         bathrooms: data.bathrooms,
         notes: data.notes,
+        oven: data.oven,
+        fridge: data.fridge,
+        trash: data.trash,
         status: 'Pending',
         date: data.preferredDate ? format(data.preferredDate, "yyyy-MM-dd") : 'Not specified',
         timestamp: Date.now(),
@@ -77,8 +113,8 @@ export default function BookingForm() {
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="font-headline text-2xl">Cleaning Request Form</CardTitle>
-        <CardDescription>Fill out your details and we'll get back to you with a quote.</CardDescription>
+        <CardTitle className="font-headline text-2xl">Cleaning Request & Price Estimator</CardTitle>
+        <CardDescription>Select your options to get an instant price estimate, then fill out your details to book.</CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -171,7 +207,91 @@ export default function BookingForm() {
                 )}
               />
             </div>
+
+            <div>
+              <FormLabel>Optional Add-Ons</FormLabel>
+              <div className="mt-2 space-y-3 rounded-lg border p-4">
+                <FormField
+                  control={form.control}
+                  name="oven"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between">
+                      <div className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal text-sm">
+                          Inside Oven Cleaning (+${pricing.addOns.oven})
+                        </FormLabel>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="fridge"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between">
+                      <div className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal text-sm">
+                          Inside Fridge Cleaning (+${pricing.addOns.fridge})
+                        </FormLabel>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={form.control}
+                  name="trash"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between">
+                      <div className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                          />
+                        </FormControl>
+                        <div className="flex items-center gap-2">
+                            <FormLabel className="font-normal text-sm">
+                                Bagged Trash Removal (+${pricing.addOns.trash})
+                            </FormLabel>
+                            <TooltipProvider>
+                                <Tooltip>
+                                    <TooltipTrigger>
+                                        <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                        <p className="max-w-[200px] text-xs">We will remove up to 5 standard kitchen-sized trash bags that are already bagged.</p>
+                                    </TooltipContent>
+                                </Tooltip>
+                            </TooltipProvider>
+                        </div>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            <PriceEstimator />
+
             <hr className="border-border/50" />
+            
+            <div className="space-y-2 text-center">
+                <h3 className="font-headline text-xl">Your Contact Information</h3>
+                <p className="text-sm text-muted-foreground">This information is required to confirm your booking.</p>
+            </div>
+
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <FormField
                 control={form.control}

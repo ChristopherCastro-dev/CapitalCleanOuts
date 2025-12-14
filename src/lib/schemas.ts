@@ -11,6 +11,9 @@ export const bookingFormSchema = z.object({
   address: z.string().min(5, "Address is required"),
   preferredDate: z.date().optional(),
   notes: z.string().optional(),
+  oven: z.boolean().optional(),
+  fridge: z.boolean().optional(),
+  trash: z.boolean().optional(),
 });
 
 export type BookingFormValues = z.infer<typeof bookingFormSchema>;
