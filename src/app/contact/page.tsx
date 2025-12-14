@@ -26,7 +26,10 @@ export default function ContactPage() {
         <div className="mx-auto mt-16 grid max-w-6xl grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
           <div className="space-y-8">
             <ContactInfo key={contactDetails.phones[0].number} />
-            <div className="h-full min-h-[400px] w-full overflow-hidden rounded-lg">
+             <div className="flex flex-col justify-center lg:hidden">
+                <ContactForm />
+            </div>
+            <div className="h-[400px] w-full overflow-hidden rounded-lg">
                <iframe
                 src={contactDetails.googleMapsEmbed}
                 width="100%"
@@ -38,7 +41,7 @@ export default function ContactPage() {
               ></iframe>
             </div>
           </div>
-          <div className="flex flex-col justify-center">
+          <div className="hidden flex-col justify-center lg:flex">
             <ContactForm />
           </div>
         </div>
