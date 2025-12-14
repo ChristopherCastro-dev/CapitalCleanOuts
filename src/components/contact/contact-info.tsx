@@ -41,7 +41,7 @@ export default function ContactInfo() {
             </a>
           </Button>
           <Button asChild size="lg" variant="secondary" className="flex-1">
-            <a href={contactDetails.whatsappLink}>
+            <a href={contactDetails.whatsappLink} target="_blank" rel="noopener noreferrer">
               <MessageSquare className="mr-2 h-5 w-5" />
               Chat on WhatsApp
             </a>
