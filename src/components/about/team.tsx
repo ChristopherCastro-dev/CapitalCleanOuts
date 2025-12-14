@@ -1,3 +1,4 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { teamMembers } from "@/lib/constants";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
@@ -17,7 +18,7 @@ export default function Team() {
             </p>
           </div>
         </div>
-        <div className="mx-auto mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:max-w-5xl">
+        <div className="mx-auto mt-12 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:max-w-4xl justify-center">
           {teamMembers.map((member) => {
              const memberImage = PlaceHolderImages.find(img => img.id === member.imageId);
              return (
