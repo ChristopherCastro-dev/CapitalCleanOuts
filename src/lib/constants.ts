@@ -9,19 +9,14 @@ export const navLinks = [
 
 export const teamMembers = [
     {
-      name: "Alex Martinez",
-      role: "Founder & CEO",
+      name: "Chris Castro",
+      role: "Founder & CEO / Lead Cleaning Specialist",
       imageId: "team-member-1"
     },
     {
-      name: "Maria Rodriguez",
+      name: "John Jimenez",
       role: "Operations Manager",
       imageId: "team-member-2"
-    },
-    {
-      name: "Carlos Vega",
-      role: "Lead Cleaning Specialist",
-      imageId: "team-member-3",
     },
   ];
 
@@ -83,3 +78,4 @@ export type Bathrooms = keyof typeof pricing.bathrooms;
 
 
 export const truckSizes = []; // Removed as it's no longer relevant
+

@@ -1,3 +1,4 @@
+
 import { Book, Sparkles, CheckCircle } from "lucide-react";
 
 const processSteps = [
