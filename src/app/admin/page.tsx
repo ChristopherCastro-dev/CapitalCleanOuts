@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { initializeFirebase } from '@/firebase';
-import { collection, onSnapshot, doc, setDoc, deleteDoc, orderBy, query, getDoc } from 'firebase/firestore';
+import { collection, onSnapshot, doc, setDoc, deleteDoc, orderBy, query, getDoc, Timestamp } from 'firebase/firestore';
 
 type Job = { 
   id: string, 
@@ -20,10 +20,10 @@ type Job = {
   notes: string,
   status: 'Pending' | 'Scheduled' | 'Completed', 
   date: string, 
-  timestamp: number, 
+  timestamp: Timestamp, 
 };
 
-type Message = { id: string, name: string, email: string, phone: string, message: string, timestamp: number, read: boolean };
+type Message = { id: string, name: string, email: string, phone: string, message: string, timestamp: Timestamp, read: boolean };
 type Customer = { email: string, name: string, phone: string };
 
 export default function AdminDashboardPage() {
@@ -81,6 +81,8 @@ function AdminDashboard(){
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const jobsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Job));
       setJobs(jobsData);
+    }, (error) => {
+      console.error("Error fetching jobs: ", error);
     });
     return () => unsubscribe();
   }, [firestore]);
@@ -93,6 +95,8 @@ function AdminDashboard(){
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const completedJobsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Job));
       setCompletedJobs(completedJobsData);
+    }, (error) => {
+      console.error("Error fetching completed jobs: ", error);
     });
     return () => unsubscribe();
   }, [firestore]);
@@ -105,6 +109,8 @@ function AdminDashboard(){
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const messagesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Message));
       setMessages(messagesData);
+    }, (error) => {
+      console.error("Error fetching messages: ", error);
     });
     return () => unsubscribe();
   }, [firestore]);
@@ -140,8 +146,8 @@ function AdminDashboard(){
       </header>
       <nav className="flex flex-wrap gap-2 justify-center mb-4">
         <Button variant={activeSection === 'jobs' ? 'default' : 'outline'} onClick={()=>setActiveSection('jobs')}>Cleaning Jobs ({jobs.length})</Button>
-        <Button variant={activeSection === 'messages' ? 'default' : 'outline'} onClick={()=>setActiveSection('messages')}>Messages ({messages.length})</Button>
-        <Button variant={activeSection === 'customers' ? 'default' : 'outline'} onClick={()=>setActiveSection('customers')}>Customers</Button>
+        <Button variant={activeSection === 'messages' ? 'default' : 'outline'} onClick={()=>setActiveSection('messages')}>Messages ({messages.filter(m => !m.read).length})</Button>
+        <Button variant={activeSection === 'customers' ? 'default' : 'outline'} onClick={()=>setActiveSection('customers')}>Customers ({customers.length})</Button>
         <Button variant={activeSection === 'stats' ? 'default' : 'outline'} onClick={()=>setActiveSection('stats')}>Job Overview</Button>
       </nav>
 
@@ -163,6 +169,14 @@ function MessagesSection({messages}:{messages:Message[]}){
     await deleteDoc(doc(firestore, "messages", id));
   };
 
+  const getDisplayDate = (timestamp: Timestamp | number) => {
+    if (!timestamp) return 'No date';
+    if (timestamp instanceof Timestamp) {
+      return timestamp.toDate().toLocaleString();
+    }
+    return new Date(timestamp).toLocaleString();
+  }
+
   return (
     <div>
       <h2 className="text-xl font-bold mb-2">Messages</h2>
@@ -173,7 +187,7 @@ function MessagesSection({messages}:{messages:Message[]}){
             <p><strong>Email:</strong> {m.email}</p>
             <p><strong>Phone:</strong> {m.phone}</p>
             <p><strong>Message:</strong> {m.message}</p>
-            <p className="text-xs text-muted-foreground"><strong>Date:</strong> {new Date(m.timestamp).toLocaleString()}</p>
+            <p className="text-xs text-muted-foreground"><strong>Date:</strong> {getDisplayDate(m.timestamp)}</p>
             <div className="flex gap-2 mt-2">
               <Button size="sm" variant="destructive" onClick={()=>deleteMsg(m.id)}>Delete</Button>
             </div>
@@ -194,23 +208,24 @@ function JobsSection({ jobs }: { jobs: Job[] }) {
 
     const completeJob = async (job: Job) => {
         if (!firestore) return;
-        const jobData = { ...job, status: 'Completed' as const };
-        await setDoc(doc(firestore, "completedJobs", job.id), jobData);
-        await deleteDoc(doc(firestore, "jobs", job.id));
+        const { id, ...jobData } = job;
+        const completedJobData = { ...jobData, status: 'Completed' as const };
+        await setDoc(doc(firestore, "completedJobs", id), completedJobData);
+        await deleteDoc(doc(firestore, "jobs", id));
     };
 
     const sendMessage = async (job: Job) => {
         if (!firestore) return;
         const messageData = {
-            id: `msg_${job.id}`,
             name: job.clientName,
             email: job.email,
             phone: job.clientPhone,
             message: `Regarding your cleaning service for ${job.serviceType} at ${job.address} scheduled for ${job.date}.`,
-            timestamp: Date.now(),
+            timestamp: Timestamp.now(),
             read: false
         };
-        const messageRef = doc(firestore, "messages", messageData.id);
+        // Use job id for the message to avoid duplicates, but prefix to avoid ID collisions if ever needed
+        const messageRef = doc(firestore, "messages", `job_${job.id}`);
         const docSnap = await getDoc(messageRef);
 
         if(!docSnap.exists()){

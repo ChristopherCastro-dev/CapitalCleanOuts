@@ -21,7 +21,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { initializeFirebase } from "@/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name is required"),
@@ -66,7 +66,7 @@ export default function ContactForm() {
         email: data.email,
         phone: data.phone || '', // Ensure phone is always a string
         message: data.message,
-        timestamp: Date.now(),
+        timestamp: serverTimestamp(),
         read: false
       };
       
@@ -80,12 +80,12 @@ export default function ContactForm() {
       form.reset();
 
     } catch (error) {
+       console.error("Error adding document: ", error);
        toast({
         title: "Error",
         description: "An error occurred while sending your message. Please try again later.",
         variant: "destructive",
       });
-      console.error("Failed to save message to Firestore", error);
     } finally {
       setIsSubmitting(false);
     }

@@ -21,7 +21,7 @@ import { pricing } from "@/lib/constants";
 import { usePriceCalculator } from "@/hooks/use-price-calculator";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { initializeFirebase } from "@/firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 
 function SubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
   return (
@@ -90,12 +90,12 @@ export default function BookingForm() {
         bedrooms: data.bedrooms,
         bathrooms: data.bathrooms,
         notes: data.notes,
-        oven: data.oven,
-        fridge: data.fridge,
-        trash: data.trash,
+        oven: data.oven || false,
+        fridge: data.fridge || false,
+        trash: data.trash || false,
         status: 'Pending' as const,
-        date: data.preferredDate ? format(data.preferredDate, "yyyy-MM-dd") : 'Not specified',
-        timestamp: Date.now(),
+        date: data.preferredDate ? format(data.preferredDate, "PPP") : 'Not specified',
+        timestamp: serverTimestamp(),
       };
 
       const jobsCol = collection(firestore, 'jobs');
@@ -108,12 +108,12 @@ export default function BookingForm() {
       form.reset();
 
     } catch (error) {
+      console.error("Error adding document: ", error);
       toast({
         title: "Error",
         description: "An error occurred while submitting your booking. Please try again.",
         variant: "destructive",
       });
-      console.error("Failed to save job to Firestore", error);
     } finally {
       setIsSubmitting(false);
     }
