@@ -59,8 +59,9 @@ export default function ContactForm() {
             timestamp: Date.now(),
             read: false,
         };
-        messages.push(newMessage);
+        messages.unshift(newMessage); // Add to the beginning of the array
         window.localStorage.setItem('messages', JSON.stringify(messages));
+        window.dispatchEvent(new Event('local-storage-changed'));
         
         toast({
           title: "Message Sent!",

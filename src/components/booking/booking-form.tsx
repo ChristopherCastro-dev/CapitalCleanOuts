@@ -85,8 +85,9 @@ export default function BookingForm() {
             date: data.preferredDate ? format(data.preferredDate, "PPP") : 'Not specified',
             timestamp: Date.now(),
         };
-        jobs.push(newJob);
+        jobs.unshift(newJob); // Add to the beginning of the array
         window.localStorage.setItem('jobs', JSON.stringify(jobs));
+        window.dispatchEvent(new Event('local-storage-changed'));
 
         toast({
           title: "Request Sent!",

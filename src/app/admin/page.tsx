@@ -93,22 +93,36 @@ function AdminDashboard(){
   const [jobs, setJobs] = useState<Job[]>([]);
   const [completedJobs, setCompletedJobs] = useState<Job[]>([]);
 
-  // Load initial data from localStorage on mount
-  useEffect(() => {
+  // Function to re-read all data from localStorage and update state
+  const refreshData = () => {
     setMessages(getFromStorage('messages', []));
     setJobs(getFromStorage('jobs', []));
     setCompletedJobs(getFromStorage('completedJobs', []));
+  }
+
+  // Load initial data and set up a listener for storage changes
+  useEffect(() => {
+    refreshData();
+
+    const handleStorageChange = () => {
+        refreshData();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    // Custom event listener for when this app itself changes storage
+    window.addEventListener('local-storage-changed', handleStorageChange);
+    
+    return () => {
+        window.removeEventListener('storage', handleStorageChange);
+        window.removeEventListener('local-storage-changed', handleStorageChange);
+    };
   }, []);
-
-  // Persist data to localStorage on change
-  useEffect(() => { setInStorage('messages', messages) }, [messages]);
-  useEffect(() => { setInStorage('jobs', jobs) }, [jobs]);
-  useEffect(() => { setInStorage('completedJobs', completedJobs) }, [completedJobs]);
-
+  
   const customers = useMemo<Customer[]>(() => {
     const customerMap = new Map<string, Customer>();
     [...messages, ...jobs, ...completedJobs].forEach(item => {
         const email = item.email;
+        // Adjust for different property names in Job vs Message
         const name = 'clientName' in item ? item.clientName : item.name;
         const phone = 'clientPhone' in item ? item.clientPhone : item.phone;
         if (email && !customerMap.has(email)) {
@@ -120,18 +134,30 @@ function AdminDashboard(){
 
   const allJobs = useMemo(() => [...jobs, ...completedJobs], [jobs, completedJobs]);
 
+  const triggerStorageUpdate = () => {
+      window.dispatchEvent(new Event('local-storage-changed'));
+  }
+
   const handleCompleteJob = (jobToComplete: Job) => {
-    const completedJob = { ...jobToComplete, status: 'Completed' as const, timestamp: Date.now() };
-    setCompletedJobs(prev => [completedJob, ...prev].sort((a, b) => b.timestamp - a.timestamp));
-    setJobs(prev => prev.filter(j => j.id !== jobToComplete.id));
+    const newCompletedJobs = [jobToComplete, ...getFromStorage('completedJobs', [])];
+    setInStorage('completedJobs', newCompletedJobs);
+    
+    const newJobs = getFromStorage('jobs', []).filter((j: Job) => j.id !== jobToComplete.id);
+    setInStorage('jobs', newJobs);
+
+    triggerStorageUpdate();
   };
 
   const handleDeleteJob = (jobId: string) => {
-    setJobs(prev => prev.filter(j => j.id !== jobId));
+    const newJobs = getFromStorage('jobs', []).filter((j: Job) => j.id !== jobId);
+    setInStorage('jobs', newJobs);
+    triggerStorageUpdate();
   };
   
   const handleDeleteCompletedJob = (jobId: string) => {
-    setCompletedJobs(prev => prev.filter(j => j.id !== jobId));
+    const newCompletedJobs = getFromStorage('completedJobs', []).filter((j: Job) => j.id !== jobId);
+    setInStorage('completedJobs', newCompletedJobs);
+    triggerStorageUpdate();
   };
 
   const handleSendMessage = (job: Job) => {
@@ -144,13 +170,19 @@ function AdminDashboard(){
         timestamp: Date.now(),
         read: false
     };
-    setMessages(prev => [newMessage, ...prev].sort((a, b) => b.timestamp - a.timestamp));
+
+    const newMessages = [newMessage, ...getFromStorage('messages', [])];
+    setInStorage('messages', newMessages);
+
     alert(`Message prepared for ${job.clientName}. Check the messages tab.`);
     setActiveSection('messages');
+    triggerStorageUpdate();
   };
 
   const handleDeleteMessage = (messageId: string) => {
-    setMessages(prev => prev.filter(m => m.id !== messageId));
+    const newMessages = getFromStorage('messages', []).filter((m: Message) => m.id !== messageId);
+    setInStorage('messages', newMessages);
+    triggerStorageUpdate();
   }
 
 
