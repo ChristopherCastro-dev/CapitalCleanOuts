@@ -9,13 +9,13 @@
     {
       "id": "before-junk",
       "description": "A messy kitchen with dirty dishes and cluttered counters before cleaning.",
-      "imageUrl": "https://images.unsplash.com/photo-1600689824243-2621a153bde2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZXNzeSUyMGtpdGNoZW58ZW58MHx8fHwxNzE3Nzg4MDAxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://i.ibb.co/bjnLQJDL/Untitled-design.jpg",
       "imageHint": "messy kitchen"
     },
     {
       "id": "after-junk",
       "description": "A sparkling clean kitchen with shiny countertops and organized cabinets.",
-      "imageUrl": "https://images.unsplash.com/photo-1600585152220-0f7e999c2e37?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjbGVhbiUyMGtpdGNoZW58ZW58MHx8fHwxNzE3Nzg4MDAyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://i.ibb.co/rVLJVxR/Untitled-design-1.jpg",
       "imageHint": "clean kitchen"
     },
     {
