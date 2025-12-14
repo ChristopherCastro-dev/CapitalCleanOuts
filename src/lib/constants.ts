@@ -1,3 +1,4 @@
+
 export const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About Us" },
@@ -34,7 +35,7 @@ export const customerReviews = [
 
 export const contactDetails = {
     phones: [
-      { number: "1-850-555-0101", display: "(850) 555-0101", owner: "Capital CleanOuts" },
+      { number: "1-347-926-1860", display: "(347) 926-1860", owner: "Capital CleanOuts" },
     ],
     email: "info@capitalcleanouts.com",
     hours: [
@@ -42,12 +43,12 @@ export const contactDetails = {
         "Sunday: Closed"
     ],
     googleMapsEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d110198.3719875936!2d-84.3594437599298!3d30.45183354722524!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88ecf5f5904f6a29%3A0x8f0c46a6f6f8955!2sTallahassee%2C%20FL!5e0!3m2!1sen!2sus!4v1717789999999!5m2!1sen!2sus",
-    whatsappLink: "https://wa.me/18505550101"
+    whatsappLink: "https://wa.me/13479261860"
 };
 
 export const itHelpDetails = {
-    phone: "1-850-555-0101",
-    phoneDisplay: "(850) 555-0101",
+    phone: "1-347-926-1860",
+    phoneDisplay: "(347) 926-1860",
 };
 
 export const truckSizes = []; // Removed as it's no longer relevant
