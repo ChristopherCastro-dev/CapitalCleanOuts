@@ -2,51 +2,27 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { initializeFirebase } from '@/firebase';
-import { getStorage, ref, listAll, getDownloadURL } from 'firebase/storage';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
+
+// A predefined list of high-quality placeholder images from the web.
+const placeholderImageUrls = [
+    "https://i.ibb.co/bjnLQJDL/Untitled-design.jpg", // Messy kitchen
+    "https://i.ibb.co/rVLJVxR/Untitled-design-1.jpg", // Clean kitchen
+    "https://picsum.photos/seed/before2/600/400",
+    "https://picsum.photos/seed/after2/600/400",
+    "https://picsum.photos/seed/before3/600/400",
+    "https://picsum.photos/seed/after3/600/400",
+];
 
 export default function PhotoGallery() {
   const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchImages() {
-      try {
-        const { storage } = initializeFirebase();
-        const imagesRef = ref(storage, 'placeholder-images');
-        
-        const res = await listAll(imagesRef);
-
-        if (res.items.length > 0) {
-          const urls = await Promise.all(
-            res.items.map((itemRef) => getDownloadURL(itemRef))
-          );
-          setImageUrls(urls);
-        } else {
-          // Fallback to placeholder images if Firebase Storage folder is empty
-          console.warn("No images in Firebase Storage, loading placeholders...");
-          const fallbackUrls = [
-            "https://picsum.photos/seed/before1/600/400",
-            "https://picsum.photos/seed/after1/600/400",
-            "https://picsum.photos/seed/before2/600/400",
-            "https://picsum.photos/seed/after2/600/400",
-            "https://picsum.photos/seed/before3/600/400",
-            "https://picsum.photos/seed/after3/600/400",
-          ];
-          setImageUrls(fallbackUrls);
-        }
-      } catch (err) {
-        console.error("Error fetching images from Firebase Storage:", err);
-        setError("Could not load the image gallery. Please try again later.");
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchImages();
+    // We are now using a static list of URLs instead of fetching from Firebase.
+    setImageUrls(placeholderImageUrls);
+    setLoading(false);
   }, []);
 
   return (
@@ -64,8 +40,7 @@ export default function PhotoGallery() {
         </div>
         <div className="mx-auto mt-12 max-w-5xl">
             {loading && <p className="text-center">Loading gallery...</p>}
-            {error && <p className="text-center text-destructive">{error}</p>}
-            {!loading && !error && (
+            {!loading && (
                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
                     {imageUrls.map((url, index) => (
                         <Card key={index} className="overflow-hidden">
