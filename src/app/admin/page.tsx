@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { initializeFirebase } from '@/firebase';
-import { collection, onSnapshot, doc, setDoc, deleteDoc, orderBy, query, getDoc, Timestamp } from 'firebase/firestore';
+import { collection, onSnapshot, doc, setDoc, deleteDoc, orderBy, query, getDoc, Timestamp, addDoc } from 'firebase/firestore';
 
 type Job = { 
   id: string, 
@@ -209,7 +209,7 @@ function JobsSection({ jobs }: { jobs: Job[] }) {
     const completeJob = async (job: Job) => {
         if (!firestore) return;
         const { id, ...jobData } = job;
-        const completedJobData = { ...jobData, status: 'Completed' as const };
+        const completedJobData = { ...jobData, status: 'Completed' as const, timestamp: Timestamp.now() };
         await setDoc(doc(firestore, "completedJobs", id), completedJobData);
         await deleteDoc(doc(firestore, "jobs", id));
     };
@@ -224,16 +224,9 @@ function JobsSection({ jobs }: { jobs: Job[] }) {
             timestamp: Timestamp.now(),
             read: false
         };
-        // Use job id for the message to avoid duplicates, but prefix to avoid ID collisions if ever needed
-        const messageRef = doc(firestore, "messages", `job_${job.id}`);
-        const docSnap = await getDoc(messageRef);
-
-        if(!docSnap.exists()){
-            await setDoc(messageRef, messageData);
-            alert(`Message started for ${job.clientName}. Check the messages tab.`);
-        } else {
-            alert(`A message for this job already exists.`);
-        }
+        
+        await addDoc(collection(firestore, "messages"), messageData);
+        alert(`Message created for ${job.clientName}. Check the messages tab.`);
     };
 
 
@@ -301,12 +294,20 @@ function StatsSection({ allJobs, completedJobs }: { allJobs: Job[], completedJob
             <p className="text-3xl font-bold">{value}</p>
         </div>
     );
+    
+    const getDisplayDate = (timestamp: Timestamp | number) => {
+        if (!timestamp) return 'No date';
+        if (timestamp instanceof Timestamp) {
+          return timestamp.toDate().toLocaleString();
+        }
+        return new Date(timestamp).toLocaleString();
+    }
 
     return (
       <div>
         <h2 className="text-xl font-bold mb-2">Job Overview</h2>
         <div className="flex flex-col md:flex-row gap-4 mb-4">
-            <StatCard title="Total Jobs" value={totalJobs} />
+            <StatCard title="Total Jobs Today" value={totalJobs} />
             <StatCard title="Completed Jobs" value={completedJobs.length} />
             <StatCard title="Pending" value={pendingJobs} />
             <StatCard title="Scheduled" value={scheduledJobs} />
@@ -323,7 +324,7 @@ function StatsSection({ allJobs, completedJobs }: { allJobs: Job[], completedJob
               </div>
               <div className="text-right">
                 <p><strong>Status:</strong> {j.status}</p>
-                <p><strong>Date:</strong> {j.date}</p>
+                <p><strong>Date:</strong> {getDisplayDate(j.timestamp)}</p>
               </div>
             </div>
             <div className='bg-muted/50 p-3 rounded-md mt-2'>
@@ -336,5 +337,3 @@ function StatsSection({ allJobs, completedJobs }: { allJobs: Job[], completedJob
       </div>
     );
 }
-
-    
