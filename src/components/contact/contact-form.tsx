@@ -47,11 +47,8 @@ export default function ContactForm() {
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
 
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // Save to localStorage
     if (typeof window !== 'undefined') {
+      try {
         const messages = JSON.parse(window.localStorage.getItem('messages') || '[]');
         const newMessage = {
             id: `msg-${Date.now()}`,
@@ -64,15 +61,22 @@ export default function ContactForm() {
         };
         messages.push(newMessage);
         window.localStorage.setItem('messages', JSON.stringify(messages));
+        
+        toast({
+          title: "Message Sent!",
+          description: "Your message has been saved and will be reviewed shortly.",
+        });
+        form.reset();
+      } catch (error) {
+        console.error("Failed to save message to localStorage", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Could not send your message. Please try again.",
+        });
+      }
     }
-
-
-    toast({
-      title: "Success!",
-      description: "Your message has been sent and added to the dashboard!",
-    });
-    form.reset();
-
+    
     setIsSubmitting(false);
   };
 
@@ -147,3 +151,5 @@ export default function ContactForm() {
     </Card>
   );
 }
+
+    

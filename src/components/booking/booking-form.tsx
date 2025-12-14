@@ -25,7 +25,7 @@ function SubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
   return (
     <Button type="submit" disabled={isSubmitting} className="w-full text-lg">
       {isSubmitting ? <Loader2 className="mr-2 h-6 w-6 animate-spin" /> : null}
-      Request a Quote
+      Submit Cleaning Request
     </Button>
   );
 }
@@ -53,7 +53,7 @@ function PriceEstimator() {
           </div>
         </div>
         <p className="text-xs text-muted-foreground mt-4">
-          This is an estimate. We will confirm the final price with you.
+          This is an estimate. Final price will be confirmed upon review.
         </p>
       </div>
     );
@@ -66,12 +66,9 @@ export default function BookingForm() {
 
   const onSubmit = async (data: BookingFormValues) => {
     setIsSubmitting(true);
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // Save to localStorage
     if (typeof window !== 'undefined') {
+      try {
         const jobs = JSON.parse(window.localStorage.getItem('jobs') || '[]');
         const newJob = {
             id: `job-${Date.now()}`,
@@ -90,13 +87,21 @@ export default function BookingForm() {
         };
         jobs.push(newJob);
         window.localStorage.setItem('jobs', JSON.stringify(jobs));
-    }
 
-    toast({
-      title: "Thanks!",
-      description: "We'll confirm pricing and availability shortly. Your request has been added to the dashboard.",
-    });
-    form.reset();
+        toast({
+          title: "Request Sent!",
+          description: "We'll confirm pricing and availability shortly. Your request has been saved.",
+        });
+        form.reset();
+      } catch (error) {
+        console.error("Failed to save job to localStorage", error);
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "Could not save your request. Please try again.",
+        });
+      }
+    }
 
     setIsSubmitting(false);
   };
@@ -385,3 +390,5 @@ export default function BookingForm() {
     </Card>
   );
 }
+
+    

@@ -28,13 +28,22 @@ type Customer = { email: string, name: string, phone: string };
 const getFromStorage = <T,>(key: string, defaultValue: T): T => {
   if (typeof window === 'undefined') return defaultValue;
   const item = window.localStorage.getItem(key);
-  return item ? JSON.parse(item) : defaultValue;
+  try {
+    return item ? JSON.parse(item) : defaultValue;
+  } catch (error) {
+    console.error(`Error parsing localStorage key "${key}":`, error);
+    return defaultValue;
+  }
 };
 
 // Helper to set data to localStorage
 const setInStorage = <T,>(key: string, value: T) => {
   if (typeof window === 'undefined') return;
-  window.localStorage.setItem(key, JSON.stringify(value));
+  try {
+    window.localStorage.setItem(key, JSON.stringify(value));
+  } catch (error) {
+    console.error(`Error setting localStorage key "${key}":`, error);
+  }
 };
 
 
@@ -98,21 +107,14 @@ function AdminDashboard(){
 
   const customers = useMemo<Customer[]>(() => {
     const customerMap = new Map<string, Customer>();
-    messages.forEach(m => {
-      if (m.email && !customerMap.has(m.email)) {
-        customerMap.set(m.email, { name: m.name, email: m.email, phone: m.phone });
-      }
+    [...messages, ...jobs, ...completedJobs].forEach(item => {
+        const email = item.email;
+        const name = 'clientName' in item ? item.clientName : item.name;
+        const phone = 'clientPhone' in item ? item.clientPhone : item.phone;
+        if (email && !customerMap.has(email)) {
+            customerMap.set(email, { name, email, phone });
+        }
     });
-    jobs.forEach(j => {
-        if(j.email && !customerMap.has(j.email)) {
-            customerMap.set(j.email, {name: j.clientName, email: j.email, phone: j.clientPhone});
-        }
-    })
-    completedJobs.forEach(j => {
-        if(j.email && !customerMap.has(j.email)) {
-            customerMap.set(j.email, {name: j.clientName, email: j.email, phone: j.clientPhone});
-        }
-    })
     return Array.from(customerMap.values());
   }, [messages, jobs, completedJobs]);
 
@@ -120,12 +122,16 @@ function AdminDashboard(){
 
   const handleCompleteJob = (jobToComplete: Job) => {
     const completedJob = { ...jobToComplete, status: 'Completed' as const, timestamp: Date.now() };
-    setCompletedJobs(prev => [completedJob, ...prev]);
+    setCompletedJobs(prev => [completedJob, ...prev].sort((a, b) => b.timestamp - a.timestamp));
     setJobs(prev => prev.filter(j => j.id !== jobToComplete.id));
   };
 
   const handleDeleteJob = (jobId: string) => {
     setJobs(prev => prev.filter(j => j.id !== jobId));
+  };
+  
+  const handleDeleteCompletedJob = (jobId: string) => {
+    setCompletedJobs(prev => prev.filter(j => j.id !== jobId));
   };
 
   const handleSendMessage = (job: Job) => {
@@ -134,12 +140,13 @@ function AdminDashboard(){
         name: job.clientName,
         email: job.email,
         phone: job.clientPhone,
-        message: `Regarding your cleaning service for ${job.serviceType} at ${job.address} scheduled for ${job.date}.`,
+        message: `Follow-up regarding your service for ${job.serviceType} at ${job.address} scheduled for ${job.date}.`,
         timestamp: Date.now(),
         read: false
     };
-    setMessages(prev => [newMessage, ...prev]);
-    alert(`Message created for ${job.clientName}. Check the messages tab.`);
+    setMessages(prev => [newMessage, ...prev].sort((a, b) => b.timestamp - a.timestamp));
+    alert(`Message prepared for ${job.clientName}. Check the messages tab.`);
+    setActiveSection('messages');
   };
 
   const handleDeleteMessage = (messageId: string) => {
@@ -154,7 +161,7 @@ function AdminDashboard(){
       </header>
       <nav className="flex flex-wrap gap-2 justify-center mb-4">
         <Button variant={activeSection === 'jobs' ? 'default' : 'outline'} onClick={()=>setActiveSection('jobs')}>Cleaning Jobs ({jobs.length})</Button>
-        <Button variant={activeSection === 'messages' ? 'default' : 'outline'} onClick={()=>setActiveSection('messages')}>Messages ({messages.filter(m => !m.read).length})</Button>
+        <Button variant={activeSection === 'messages' ? 'default' : 'outline'} onClick={()=>setActiveSection('messages')}>Messages ({messages.length})</Button>
         <Button variant={activeSection === 'customers' ? 'default' : 'outline'} onClick={()=>setActiveSection('customers')}>Customers ({customers.length})</Button>
         <Button variant={activeSection === 'stats' ? 'default' : 'outline'} onClick={()=>setActiveSection('stats')}>Job Overview</Button>
       </nav>
@@ -163,7 +170,7 @@ function AdminDashboard(){
         {activeSection==='messages' && <MessagesSection messages={messages} onDelete={handleDeleteMessage} />}
         {activeSection==='jobs' && <JobsSection jobs={jobs} onComplete={handleCompleteJob} onDelete={handleDeleteJob} onSendMessage={handleSendMessage} />}
         {activeSection==='customers' && <CustomersSection customers={customers} />}
-        {activeSection==='stats' && <StatsSection allJobs={allJobs} completedJobs={completedJobs} />}
+        {activeSection==='stats' && <StatsSection allJobs={allJobs} completedJobs={completedJobs} onDeleteCompleted={handleDeleteCompletedJob} />}
       </main>
     </div>
   );
@@ -180,16 +187,16 @@ function MessagesSection({messages, onDelete}:{messages:Message[], onDelete: (id
 
   return (
     <div>
-      <h2 className="text-xl font-bold mb-2">Messages</h2>
+      <h2 className="text-xl font-bold mb-2 text-center">Messages ({messages.length})</h2>
       {sortedMessages.length === 0 && <p className='text-center text-muted-foreground'>No messages yet.</p>}
       {sortedMessages.map(m=>(
-        <Card key={m.id} className="mb-2">
+        <Card key={m.id} className="mb-2 max-w-2xl mx-auto">
           <CardContent className="p-3 text-sm space-y-1">
             <p><strong>Name:</strong> {m.name}</p>
             <p><strong>Email:</strong> {m.email}</p>
             <p><strong>Phone:</strong> {m.phone}</p>
             <p><strong>Message:</strong> {m.message}</p>
-            <p className="text-xs text-muted-foreground"><strong>Date:</strong> {getDisplayDate(m.timestamp)}</p>
+            <p className="text-xs text-muted-foreground"><strong>Received:</strong> {getDisplayDate(m.timestamp)}</p>
             <div className="flex gap-2 mt-2">
               <Button size="sm" variant="destructive" onClick={()=>onDelete(m.id)}>Delete</Button>
             </div>
@@ -204,12 +211,12 @@ function JobsSection({ jobs, onComplete, onDelete, onSendMessage }: { jobs: Job[
   const sortedJobs = [...jobs].sort((a,b) => b.timestamp - a.timestamp);
   return (
     <div>
-       <div className="flex justify-between items-center mb-2">
+       <div className="flex justify-center items-center mb-2">
         <h2 className="text-xl font-bold">Active Cleaning Jobs ({jobs.length})</h2>
       </div>
       {sortedJobs.length === 0 && <p className='text-center text-muted-foreground'>No active jobs.</p>}
       {sortedJobs.map(j=>(
-        <Card key={j.id} className="mb-2">
+        <Card key={j.id} className="mb-2 max-w-3xl mx-auto">
           <CardContent className="p-4 space-y-2 text-sm">
             <div className="flex justify-between items-start">
               <div>
@@ -218,8 +225,8 @@ function JobsSection({ jobs, onComplete, onDelete, onSendMessage }: { jobs: Job[
                 <p><strong>Email:</strong> {j.email}</p>
               </div>
               <div className="text-right">
-                <p><strong>Status:</strong> {j.status}</p>
-                <p><strong>Date:</strong> {j.date}</p>
+                <p><strong>Status:</strong> <span className='font-semibold text-primary'>{j.status}</span></p>
+                <p><strong>Requested Date:</strong> {j.date}</p>
               </div>
             </div>
             <div className='bg-muted/50 p-3 rounded-md mt-2'>
@@ -228,8 +235,8 @@ function JobsSection({ jobs, onComplete, onDelete, onSendMessage }: { jobs: Job[
               {j.notes && <p><strong>Notes:</strong> {j.notes}</p>}
             </div>
             <div className="flex gap-2 mt-2">
-              <Button size="sm" className="complete" onClick={() => onComplete(j)}>Complete</Button>
-              <Button size="sm" className="send" onClick={() => onSendMessage(j)}>Send Message</Button>
+              <Button size="sm" className="bg-primary hover:bg-primary/90" onClick={() => onComplete(j)}>Complete Job</Button>
+              <Button size="sm" variant="secondary" onClick={() => onSendMessage(j)}>Prepare Message</Button>
               <Button size="sm" variant="destructive" onClick={()=>onDelete(j.id)}>Delete</Button>
             </div>
           </CardContent>
@@ -240,24 +247,27 @@ function JobsSection({ jobs, onComplete, onDelete, onSendMessage }: { jobs: Job[
 }
 
 function CustomersSection({ customers }: { customers: Customer[] }) {
+    const sortedCustomers = [...customers].sort((a,b) => a.name.localeCompare(b.name));
     return (
         <div>
-            <h2 className="text-xl font-bold mb-2">Customers ({customers.length})</h2>
-            {customers.length === 0 && <p className='text-center text-muted-foreground'>No customers yet.</p>}
-            {customers.map(cust => (
-                <Card key={cust.email} className="mb-2">
-                    <CardContent className="p-3 text-sm space-y-1">
-                        <p><strong>Name:</strong> {cust.name}</p>
-                        <p><strong>Email:</strong> {cust.email}</p>
-                        <p><strong>Phone:</strong> {cust.phone}</p>
-                    </CardContent>
-                </Card>
-            ))}
+            <h2 className="text-xl font-bold mb-2 text-center">Customers ({customers.length})</h2>
+            {sortedCustomers.length === 0 && <p className='text-center text-muted-foreground'>No customers yet.</p>}
+            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-w-5xl mx-auto'>
+                {sortedCustomers.map(cust => (
+                    <Card key={cust.email} className="mb-2">
+                        <CardContent className="p-3 text-sm space-y-1">
+                            <p><strong>Name:</strong> {cust.name}</p>
+                            <p><strong>Email:</strong> {cust.email}</p>
+                            <p><strong>Phone:</strong> {cust.phone}</p>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
         </div>
     );
 }
 
-function StatsSection({ allJobs, completedJobs }: { allJobs: Job[], completedJobs: Job[]}) {
+function StatsSection({ allJobs, completedJobs, onDeleteCompleted }: { allJobs: Job[], completedJobs: Job[], onDeleteCompleted: (id: string) => void }) {
     const totalJobs = allJobs.length;
     const pendingJobs = allJobs.filter(j => j.status === 'Pending').length;
     const scheduledJobs = allJobs.filter(j => j.status === 'Scheduled').length;
@@ -266,7 +276,7 @@ function StatsSection({ allJobs, completedJobs }: { allJobs: Job[], completedJob
 
     const StatCard = ({ title, value }: { title: string, value: number | string }) => (
         <div className="flex-1 bg-card p-4 rounded-xl text-center border">
-            <span className="text-xl font-bold">{title}</span>
+            <p className="text-muted-foreground">{title}</p>
             <p className="text-3xl font-bold">{value}</p>
         </div>
     );
@@ -278,18 +288,18 @@ function StatsSection({ allJobs, completedJobs }: { allJobs: Job[], completedJob
 
     return (
       <div>
-        <h2 className="text-xl font-bold mb-2">Job Overview</h2>
-        <div className="flex flex-col md:flex-row gap-4 mb-4">
-            <StatCard title="Total Jobs" value={totalJobs} />
-            <StatCard title="Completed Jobs" value={completedJobs.length} />
+        <h2 className="text-xl font-bold mb-4 text-center">Job Overview</h2>
+        <div className="flex flex-col md:flex-row gap-4 mb-6 max-w-4xl mx-auto">
+            <StatCard title="Total Jobs Created" value={totalJobs} />
+            <StatCard title="Completed" value={completedJobs.length} />
             <StatCard title="Pending" value={pendingJobs} />
             <StatCard title="Scheduled" value={scheduledJobs} />
         </div>
 
-        <h3 className="text-lg font-bold mt-6 mb-2">Completed Jobs Details</h3>
+        <h3 className="text-lg font-bold mt-6 mb-2 text-center">Completed Jobs History</h3>
         {sortedCompleted.length === 0 && <p className='text-center text-muted-foreground'>No completed jobs yet.</p>}
         {sortedCompleted.map(j=>(
-        <Card key={j.id} className="mb-2">
+        <Card key={j.id} className="mb-2 max-w-3xl mx-auto">
           <CardContent className="p-4 space-y-2 text-sm">
              <div className="flex justify-between items-start">
               <div>
@@ -297,13 +307,16 @@ function StatsSection({ allJobs, completedJobs }: { allJobs: Job[], completedJob
                 <p><strong>Address:</strong> {j.address}</p>
               </div>
               <div className="text-right">
-                <p><strong>Status:</strong> {j.status}</p>
-                <p><strong>Date:</strong> {getDisplayDate(j.timestamp)}</p>
+                <p><strong>Status:</strong> <span className='font-semibold text-green-600'>{j.status}</span></p>
+                <p><strong>Completed On:</strong> {getDisplayDate(j.timestamp)}</p>
               </div>
             </div>
             <div className='bg-muted/50 p-3 rounded-md mt-2'>
               <p><strong>Job:</strong> {j.serviceType} ({j.propertyType})</p>
               <p><strong>Size:</strong> {j.bedrooms} Bed, {j.bathrooms} Bath</p>
+            </div>
+             <div className="flex gap-2 mt-2">
+                <Button size="sm" variant="destructive" onClick={()=>onDeleteCompleted(j.id)}>Delete from History</Button>
             </div>
           </CardContent>
         </Card>
@@ -311,3 +324,5 @@ function StatsSection({ allJobs, completedJobs }: { allJobs: Job[], completedJob
       </div>
     );
 }
+
+    
