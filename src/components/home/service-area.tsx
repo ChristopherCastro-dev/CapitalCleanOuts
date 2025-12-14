@@ -3,7 +3,7 @@ import Image from "next/image";
 import { Check } from "lucide-react";
 
 const mapImage = PlaceHolderImages.find(img => img.id === 'service-area-map');
-const serviceLocations = ["Miami-Dade County", "Broward County", "Homestead", "Fort Lauderdale"];
+const serviceLocations = ["Tallahassee", "Florida State University (FSU)", "Florida A&M University (FAMU)", "Surrounding Neighborhoods"];
 
 export default function ServiceArea() {
   return (
@@ -12,10 +12,10 @@ export default function ServiceArea() {
         <div className="grid items-center gap-6 lg:grid-cols-2 lg:gap-12">
           <div className="space-y-4">
             <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
-              Serving All of South Florida
+              Serving Tallahassee, FL and Nearby Areas
             </h2>
             <p className="max-w-[600px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              From the Keys to Palm Beach, our trucks are ready to serve you. We provide fast and reliable junk removal services across the entire Miami metropolitan area.
+              Our cleaning crews are ready to serve you. We provide fast and reliable cleaning services across Tallahassee and the surrounding communities.
             </p>
             <ul className="grid gap-2 py-4">
               {serviceLocations.map((location) => (

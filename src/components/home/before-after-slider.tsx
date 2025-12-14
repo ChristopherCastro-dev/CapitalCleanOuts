@@ -20,10 +20,10 @@ export default function BeforeAfterSlider() {
         <div className="flex flex-col items-center space-y-4 text-center">
           <div className="space-y-2">
             <h2 className="font-headline text-3xl font-bold tracking-tighter sm:text-4xl">
-              See the JUNKXPRESS Difference
+              Real Move-Out Cleaning Results
             </h2>
             <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed">
-              Drag the slider to see the transformation. From cluttered to clean, just like that.
+              Drag the slider to see the transformation. From messy to move-in ready.
             </p>
           </div>
         </div>

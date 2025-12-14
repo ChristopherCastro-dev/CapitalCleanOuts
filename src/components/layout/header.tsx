@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Truck } from "lucide-react";
+import { Menu, Sparkles } from "lucide-react";
 import { navLinks } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
@@ -33,8 +33,8 @@ export default function Header() {
         <div className="container flex h-20 items-center justify-between px-4 md:px-6">
           <div className="relative">
             <Link href="/" className="flex items-center gap-2 font-headline text-2xl font-bold">
-              <Truck className="h-7 w-7 text-primary" />
-              <span>JUNKXPRESS</span>
+              <Sparkles className="h-7 w-7 text-primary" />
+              <span>Capital CleanOuts</span>
             </Link>
             <AdminTrigger />
           </div>
@@ -54,7 +54,7 @@ export default function Header() {
           </nav>
           <div className="hidden items-center gap-4 md:flex">
             <Button asChild>
-              <Link href="/booking">Book Now</Link>
+              <Link href="/booking">Book a Cleaning</Link>
             </Button>
           </div>
           <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -67,8 +67,8 @@ export default function Header() {
             <SheetContent side="right" className="w-full max-w-xs bg-background">
               <div className="flex flex-col p-6">
                   <Link href="/" className="flex items-center gap-2 font-headline text-2xl font-bold mb-8" onClick={() => setIsOpen(false)}>
-                      <Truck className="h-7 w-7 text-primary" />
-                      <span>JUNKXPRESS</span>
+                      <Sparkles className="h-7 w-7 text-primary" />
+                      <span>Capital CleanOuts</span>
                   </Link>
                 <nav className="flex flex-col gap-6">
                   {navLinks.map((link) => (
@@ -86,7 +86,7 @@ export default function Header() {
                   ))}
                 </nav>
                 <Button asChild className="mt-8" size="lg">
-                  <Link href="/booking" onClick={() => setIsOpen(false)}>Book Now</Link>
+                  <Link href="/booking" onClick={() => setIsOpen(false)}>Book a Cleaning</Link>
                 </Button>
               </div>
             </SheetContent>

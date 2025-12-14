@@ -32,7 +32,7 @@ export default function Reviews() {
               Trusted by Your Neighbors
             </h2>
             <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl/relaxed">
-              See what our satisfied customers in Miami have to say about our service.
+              See what our satisfied customers in Tallahassee have to say about our service.
             </p>
           </div>
         </div>

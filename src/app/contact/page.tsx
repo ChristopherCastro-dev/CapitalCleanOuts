@@ -18,7 +18,7 @@ export default function ContactPage() {
               Get in Touch
             </h1>
             <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-              Have questions? We're here to help. Contact us today for a free, no-obligation quote.
+              Questions about pricing or availability? Call or message us today for a free, no-obligation quote.
             </p>
           </div>
         </div>
@@ -46,5 +46,3 @@ export default function ContactPage() {
     </section>
   );
 }
-
-    

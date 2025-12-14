@@ -2,37 +2,37 @@
   "placeholderImages": [
     {
       "id": "hero-background",
-      "description": "A clean curb with a JunkXpress truck ready for a pickup in a sunny Miami neighborhood.",
-      "imageUrl": "https://images.unsplash.com/photo-1712252264910-f18ac5f2685f?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxqdW5rJTIwcmVtb3ZhbCUyMHRydWNrfGVufDB8fHx8MTc2NTQyNTQyM3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "junk removal truck"
+      "description": "A bright and clean living room with sparkling floors, representing a freshly cleaned home.",
+      "imageUrl": "https://images.unsplash.com/photo-1585435421933-a8594248a315?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjbGVhbiUyMGxpdmluZyUyMHJvb218ZW58MHx8fHwxNzE3Nzg4MDAwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "clean room"
     },
     {
       "id": "before-junk",
-      "description": "A cluttered room filled with boxes and items before junk removal.",
-      "imageUrl": "https://i.ibb.co/RpxLtFxj/Before.png",
-      "imageHint": "cluttered room"
+      "description": "A messy kitchen with dirty dishes and cluttered counters before cleaning.",
+      "imageUrl": "https://images.unsplash.com/photo-1600689824243-2621a153bde2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtZXNzeSUyMGtpdGNoZW58ZW58MHx8fHwxNzE3Nzg4MDAxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "messy kitchen"
     },
     {
       "id": "after-junk",
-      "description": "A clean, empty room with a fireplace after junk removal.",
-      "imageUrl": "https://i.ibb.co/C3f9J03w/After.png",
-      "imageHint": "empty room"
+      "description": "A sparkling clean kitchen with shiny countertops and organized cabinets.",
+      "imageUrl": "https://images.unsplash.com/photo-1600585152220-0f7e999c2e37?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxjbGVhbiUyMGtpdGNoZW58ZW58MHx8fHwxNzE3Nzg4MDAyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "clean kitchen"
     },
     {
       "id": "service-area-map",
-      "description": "A stylized map of South Florida highlighting Miami, Broward, Homestead, and Fort Lauderdale.",
-      "imageUrl": "https://images.unsplash.com/photo-1718161036562-7d6714ca779d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtaWFtaSUyMG1hcHxlbnwwfHx8fDE3NjU0MjU0MjN8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "miami map"
+      "description": "A stylized map of Tallahassee, Florida.",
+      "imageUrl": "https://images.unsplash.com/photo-1599059814492-e4e01b7a2569?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx0YWxsYWhhc3NlZSUyMGZsb3JpZGElMjBtYXB8ZW58MHx8fHwxNzE3Nzg4MDAzfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "tallahassee map"
     },
     {
       "id": "about-us-team",
-      "description": "The JunkXpress team standing proudly in front of their branded truck.",
+      "description": "The Capital CleanOuts team standing proudly together.",
       "imageUrl": "https://images.unsplash.com/photo-1573496130141-209d200cebd8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxwcm9mZXNzaW9uYWwlMjB0ZWFtfGVufDB8fHx8MTc2NTMyNjMzNHww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "professional team"
     },
     {
       "id": "team-member-1",
-      "description": "Portrait of the founder of JunkXpress.",
+      "description": "Portrait of the founder of Capital CleanOuts.",
       "imageUrl": "https://images.unsplash.com/flagged/photo-1595514191830-3e96a518989b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxtYWxlJTIwcG9ydHJhaXR8ZW58MHx8fHwxNzY1MzY5OTMzfDA&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "male portrait"
     },

@@ -6,9 +6,9 @@ import Footer from '@/components/layout/footer';
 import { FloatingButtons } from '@/components/layout/floating-buttons';
 
 export const metadata: Metadata = {
-  title: 'JUNKXPRESS | Fast, Affordable Cleanouts in Miami',
-  description: 'JUNKXPRESS offers fast, affordable, and eco-friendly junk removal and cleanout services in Miami, Broward, and surrounding areas. Same-day service available.',
-  keywords: 'junk removal miami, cleanouts, furniture removal, construction debris, eviction cleanout, junkxpress',
+  title: 'Move-Out Cleaning in Tallahassee | Capital CleanOuts',
+  description: 'Flat-rate move-out and deep cleaning services in Tallahassee. Fast availability for apartments, homes, and rentals.',
+  keywords: 'move-out cleaning tallahassee, deep cleaning, apartment cleaning, rental cleaning, capital cleanouts',
 };
 
 export default function RootLayout({

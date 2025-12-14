@@ -9,10 +9,10 @@ export default function Footer() {
       <div className="container grid grid-cols-2 md:grid-cols-4 gap-8 px-4 py-12 md:px-6">
         <div className="grid gap-2 col-span-2 md:col-span-1">
           <Link href="/" className="font-headline text-2xl font-bold text-primary">
-            JUNKXPRESS
+            Capital CleanOuts
           </Link>
           <p className="text-sm text-muted-foreground">
-            Fast, Affordable Cleanouts in Miami.
+            Move-Out & Property Cleaning
           </p>
         </div>
         <div className="grid gap-2">
@@ -33,16 +33,16 @@ export default function Footer() {
         </div>
         <div className="grid gap-2">
           <h3 className="font-semibold">Get Started</h3>
-          <p className="text-sm text-muted-foreground">Ready to declutter? Get a free estimate today.</p>
+          <p className="text-sm text-muted-foreground">Ready for a spotless space? Get a free estimate today.</p>
           <Button asChild>
-            <Link href="/booking">Book a Cleanout</Link>
+            <Link href="/booking">Book a Cleaning</Link>
           </Button>
         </div>
       </div>
       <div className="border-t border-border/50">
         <div className="container flex flex-col md:flex-row items-center justify-between gap-2 px-4 py-4 md:px-6">
           <p className="text-xs text-muted-foreground">
-            &copy; {new Date().getFullYear()} JUNKXPRESS. All rights reserved.
+            &copy; {new Date().getFullYear()} Capital CleanOuts. All rights reserved.
           </p>
           <div className="flex gap-4 text-xs">
              <Link href="#" className="text-muted-foreground hover:text-primary">

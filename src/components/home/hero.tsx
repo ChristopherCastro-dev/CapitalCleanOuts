@@ -22,17 +22,17 @@ export default function Hero() {
       <div className="relative z-10 container px-4 md:px-6">
         <div className="mx-auto max-w-4xl space-y-6">
           <h1 className="font-headline text-4xl font-bold tracking-tighter text-white sm:text-5xl md:text-6xl lg:text-7xl">
-            Fast, Affordable Cleanouts in Miami
+            Move-Out & Deep Cleaning in Tallahassee
           </h1>
           <p className="text-lg text-gray-200 md:text-xl">
-            Same-Day Junk Removal for Homes, Offices, and More. Get Your Space Back Today!
+            Fast, flat-rate cleaning for apartments, homes, and rental properties.
           </p>
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
             <Button asChild size="lg" className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Link href="/booking">Book a Cleanout</Link>
+              <Link href="/booking">Book a Cleaning</Link>
             </Button>
             <Button asChild size="lg" variant="secondary" className="bg-accent hover:bg-accent/90 text-accent-foreground">
-              <Link href="/booking">Get a Free Quote</Link>
+              <Link href="/contact">Get a Free Quote</Link>
             </Button>
           </div>
         </div>

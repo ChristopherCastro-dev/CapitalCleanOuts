@@ -1,84 +1,44 @@
-import { Home, Trash2, Archive, Building2, Trees, Sofa, Construction, ShieldAlert } from 'lucide-react';
+import { Building, Sparkles, KeyRound, Briefcase } from 'lucide-react';
 
 export const services = [
   {
-    icon: <Home className="h-6 w-6" />,
-    title: "Home Cleanouts",
-    shortDescription: "Full house, apartment, and estate cleanouts.",
-    longDescription: "Whether you're moving, downsizing, or just decluttering, we handle everything from attics to basements. We'll sort, remove, and haul away all unwanted items, leaving your home spacious and clean.",
+    icon: <KeyRound className="h-6 w-6" />,
+    title: "Move-Out / Move-In Cleaning",
+    shortDescription: "For renters & property turnovers.",
+    longDescription: "Thorough cleaning designed to meet landlord and apartment inspection standards. We cover kitchens, appliances (exterior), bathrooms, floors, baseboards, and remove bagged trash.",
     pricingExamples: [
-      { item: "Single Room", price: "$150+" },
-      { item: "Whole Apartment", price: "$400+" },
+      { item: "Studio/1-Bed", price: "$220+" },
+      { item: "2-3 Beds", price: "$300+" },
     ],
   },
   {
-    icon: <Trash2 className="h-6 w-6" />,
-    title: "Garage Cleanouts",
-    shortDescription: "Reclaim your garage from clutter.",
-    longDescription: "Turn your packed garage back into a functional space. We take old tools, boxes, sports equipment, and anything else that's taking up valuable real estate.",
+    icon: <Sparkles className="h-6 w-6" />,
+    title: "Deep Residential Cleaning",
+    shortDescription: "Intensive cleaning for homes.",
+    longDescription: "Ideal for first-time cleanings or homes that need extra attention. We go beyond the surface to eliminate grime, dust, and buildup, leaving your home exceptionally clean.",
     pricingExamples: [
-      { item: "Small Clutter", price: "$125+" },
-      { item: "Full Garage", price: "$350+" },
+      { item: "Standard Home", price: "$180+" },
+      { item: "Large Home", price: "$350+" },
     ],
   },
   {
-    icon: <Archive className="h-6 w-6" />,
-    title: "Storage Unit Cleanouts",
-    shortDescription: "Empty your storage unit hassle-free.",
-    longDescription: "Stop paying for a storage unit you no longer need. We provide fast and efficient cleanouts, so you can close your account and save money.",
+    icon: <Building className="h-6 w-6" />,
+    title: "Apartment Turnovers",
+    shortDescription: "For landlords & property managers.",
+    longDescription: "Fast and reliable turnaround cleaning service to get your rental properties ready for the next tenant. We understand the need for speed and quality.",
     pricingExamples: [
-      { item: "5x5 Unit", price: "$100+" },
-      { item: "10x20 Unit", price: "$300+" },
+      { item: "Per Unit", price: "Custom" },
+      { item: "Bulk Discount", price: "Call for Quote" },
     ],
   },
   {
-    icon: <Building2 className="h-6 w-6" />,
-    title: "Office & Commercial Cleanouts",
-    shortDescription: "Efficient cleanouts for business spaces.",
-    longDescription: "Upgrading office furniture, closing a location, or clearing out a retail space? We handle office desks, chairs, electronics, and commercial waste with minimal disruption to your business.",
-     pricingExamples: [
-      { item: "Single Office", price: "$200+" },
-      { item: "Full Floor", price: "Call for Quote" },
-    ],
-  },
-  {
-    icon: <Trees className="h-6 w-6" />,
-    title: "Yard Debris Removal",
-    shortDescription: "Branches, leaves, and old patio furniture.",
-    longDescription: "Post-hurricane cleanup or a big landscaping project? We haul away all types of yard waste, including branches, leaves, soil, and old outdoor furniture, so you can enjoy your yard again.",
+    icon: <Briefcase className="h-6 w-6" />,
+    title: "Small Office Cleaning",
+    shortDescription: "Weekly or bi-weekly service.",
+    longDescription: "Maintain a professional and clean environment for your employees and clients with our reliable office cleaning services. We offer flexible contracts to suit your needs.",
     pricingExamples: [
-      { item: "Bagged Debris", price: "$90+" },
-      { item: "Large Branches", price: "$180+" },
-    ],
-  },
-  {
-    icon: <Sofa className="h-6 w-6" />,
-    title: "Appliance & Furniture Haul-Away",
-    shortDescription: "Single item or full set removal.",
-    longDescription: "Getting a new sofa, mattress, or refrigerator? We'll safely remove your old, bulky items from anywhere in your home, so you don't have to lift a finger.",
-    pricingExamples: [
-      { item: "Mattress", price: "$80" },
-      { item: "Sofa", price: "$100" },
-    ],
-  },
-  {
-    icon: <Construction className="h-6 w-6" />,
-    title: "Construction Debris",
-    shortDescription: "Post-renovation material cleanup.",
-    longDescription: "Keep your job site clean and safe. We remove drywall, wood, tiles, concrete, and other construction materials, helping your project stay on schedule.",
-    pricingExamples: [
-      { item: "Small Pile", price: "$175+" },
-      { item: "Full Truck", price: "$600" },
-    ],
-  },
-  {
-    icon: <ShieldAlert className="h-6 w-6" />,
-    title: "Hoarder Cleanouts",
-    shortDescription: "Sensitive and discreet property clearing.",
-    longDescription: "We provide compassionate, respectful, and discreet cleanout services for hoarding situations. Our trained team works efficiently to restore the home to a safe and livable condition.",
-    pricingExamples: [
-      { item: "Assessment", price: "Free" },
-      { item: "Full Service", price: "Call for Quote" },
+      { item: "Weekly", price: "Contact Us" },
+      { item: "Bi-Weekly", price: "Contact Us" },
     ],
   },
 ];

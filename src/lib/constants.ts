@@ -1,15 +1,10 @@
-
-
 export const navLinks = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About Us" },
   { href: "/services", label: "Services" },
   { href: "/booking", label: "Booking" },
   { href: "/contact", label: "Contact" },
-  { href: "/it-help", label: "IT Help" },
 ];
-
-
 
 export const teamMembers = [
     {
@@ -24,67 +19,35 @@ export const teamMembers = [
     },
     {
       name: "Carlos Vega",
-      role: "Lead Crew Chief",
+      role: "Lead Cleaning Specialist",
       imageId: "team-member-3",
     },
   ];
 
 export const customerReviews = [
-  { rating: 5, text: "JUNKXPRESS was a lifesaver! They cleared out my dad's entire house in one afternoon. So professional and fast.", author: "Sarah L., Coral Gables" },
-  { rating: 5, text: "Called them in the morning and my old couch was gone by lunch. Insanely fast service. Highly recommend!", author: "Mike T., Fort Lauderdale" },
-  { rating: 4.5, text: "Great service and fair pricing. They even swept the garage floor after they were done. A+ team.", author: "Jennifer P., Miami Beach" },
-  { rating: 5, text: "Used them for a construction site cleanup. They were on time, efficient, and handled all the debris without any issues.", author: "David C., Homestead" },
-  { rating: 5, text: "The booking process was so easy, and the crew was incredibly friendly and professional. Made my move so much less stressful.", author: "Emily R., Aventura" },
+  { rating: 5, text: "Capital CleanOuts was a lifesaver! They did a move-out cleaning on my apartment and it passed inspection with no issues.", author: "Sarah L., Tallahassee" },
+  { rating: 5, text: "Called them for a deep clean and my house has never looked better. Insanely good service. Highly recommend!", author: "Mike T., FSU Student" },
+  { rating: 4.5, text: "Great service and flat-rate pricing is a huge plus. The team was professional and friendly. A+ service.", author: "Jennifer P., Midtown" },
+  { rating: 5, text: "As a landlord, I use them for all my apartment turnovers. They are on time, efficient, and always do a fantastic job.", author: "David C., Property Manager" },
+  { rating: 5, text: "The booking process was so easy, and the crew was incredibly professional. Made my move so much less stressful.", author: "Emily R., CollegeTown" },
 ];
 
 export const contactDetails = {
     phones: [
-      { number: "1-786-205-7298", display: "(786) 205-7298", owner: "Jonathan Brena" },
-      { number: "1-786-387-1153", display: "(786) 387-1153", owner: "Jonathan Mora" },
+      { number: "1-850-555-0101", display: "(850) 555-0101", owner: "Capital CleanOuts" },
     ],
-    email: "contact@junkxpress.com",
+    email: "info@capitalcleanouts.com",
     hours: [
-        "Monday - Saturday: 7:00 AM - 7:00 PM",
-        "Sunday: 9:00 AM - 5:00 PM"
+        "Monday - Saturday: 8:00 AM - 6:00 PM",
+        "Sunday: Closed"
     ],
-    googleMapsEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d229988.6534575122!2d-80.36922896645803!3d25.78254530839841!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88d9b0a20ec8c111%3A0x9add025f82a70364!2sMiami%2C%20FL!5e0!3m2!1sen!2sus!4v1689999999999!5m2!1sen!2sus",
-    whatsappLink: "https://wa.me/13057789397"
+    googleMapsEmbed: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d110198.3719875936!2d-84.3594437599298!3d30.45183354722524!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x88ecf5f5904f6a29%3A0x8f0c46a6f6f8955!2sTallahassee%2C%20FL!5e0!3m2!1sen!2sus!4v1717789999999!5m2!1sen!2sus",
+    whatsappLink: "https://wa.me/18505550101"
 };
 
 export const itHelpDetails = {
-    phone: "1-305-778-9397",
-    phoneDisplay: "(305) 778-9397",
+    phone: "1-850-555-0101",
+    phoneDisplay: "(850) 555-0101",
 };
 
-export const truckSizes = [
-  {
-    label: "Select volume",
-    description: "Drag the slider to choose the amount of junk.",
-    price: "$0",
-    fill: "0%",
-  },
-  {
-    label: "1/4 Truck Load",
-    description: "Equivalent to 1 pickup truck bed. Good for a single appliance or a few items.",
-    price: "$150",
-    fill: "25%",
-  },
-  {
-    label: "1/2 Truck Load",
-    description: "Equivalent to 2-3 pickup truck beds. Perfect for a room cleanout or small renovation.",
-    price: "$350",
-    fill: "50%",
-  },
-  {
-    label: "3/4 Truck Load",
-    description: "Good for an apartment cleanout or garage declutter.",
-    price: "$475",
-    fill: "75%",
-  },
-  {
-    label: "Full Truck Load",
-    description: "Our largest load size. Ideal for a full house cleanout or major debris.",
-    price: "$600",
-    fill: "100%",
-  },
-];
+export const truckSizes = []; // Removed as it's no longer relevant

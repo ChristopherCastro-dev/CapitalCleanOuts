@@ -6,8 +6,23 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import Image from 'next/image';
 
+type Job = { 
+  id:string, 
+  clientName:string, 
+  clientPhone:string, 
+  email: string,
+  address:string, 
+  serviceType: string,
+  propertyType: string,
+  bedrooms: string,
+  bathrooms: string,
+  notes: string,
+  status:'Pending'|'Scheduled'|'Completed', 
+  date:string, 
+  timestamp:number, 
+};
+
 type Message = { id:string, name:string, email:string, phone:string, message:string, timestamp:number, read:boolean };
-type Job = { id:string, clientName:string, clientPhone:string, address:string, status:'Pending'|'In Progress'|'Completed', date:string, timestamp:number, photo?: string, junkVolume?: string, price?: string };
 type Customer = { email: string, name: string, phone: string };
 
 export default function AdminDashboardPage() {
@@ -51,7 +66,7 @@ export default function AdminDashboardPage() {
 }
 
 function AdminDashboard(){
-  const [activeSection,setActiveSection] = useState<'messages'|'jobs'|'customers'|'stats'>('messages');
+  const [activeSection,setActiveSection] = useState<'messages'|'jobs'|'customers'|'stats'>('jobs');
   const [messages,setMessages] = useState<Message[]>([]);
   const [jobs,setJobs] = useState<Job[]>([]);
 
@@ -73,20 +88,18 @@ function AdminDashboard(){
       window.removeEventListener('storage', loadData);
     }
   },[]);
-
-  // Persist state changes back to localStorage
-  useEffect(() => { 
-    // Only write to localStorage if messages state is not empty, to avoid overwriting on initial mount
-    if (messages.length > 0) {
-      localStorage.setItem('messages', JSON.stringify(messages)); 
-    }
-  }, [messages]);
-
-  useEffect(() => { 
-    if (jobs.length > 0) {
-      localStorage.setItem('jobs', JSON.stringify(jobs)); 
+  
+  useEffect(() => {
+    if (jobs.length > 0 || JSON.parse(localStorage.getItem('jobs') || '[]').length > 0) {
+      localStorage.setItem('jobs', JSON.stringify(jobs));
     }
   }, [jobs]);
+
+  useEffect(() => {
+    if (messages.length > 0 || JSON.parse(localStorage.getItem('messages') || '[]').length > 0) {
+      localStorage.setItem('messages', JSON.stringify(messages));
+    }
+  }, [messages]);
 
   const customers = useMemo<Customer[]>(() => {
     const customerMap = new Map<string, Customer>();
@@ -95,24 +108,29 @@ function AdminDashboard(){
         customerMap.set(m.email, { name: m.name, email: m.email, phone: m.phone });
       }
     });
+    jobs.forEach(j => {
+        if(j.email && !customerMap.has(j.email)) {
+            customerMap.set(j.email, {name: j.clientName, email: j.email, phone: j.clientPhone});
+        }
+    })
     return Array.from(customerMap.values());
-  }, [messages]);
+  }, [messages, jobs]);
 
   return (
     <div className="min-h-screen bg-[#0f0f0f] text-white p-4">
-      <header className="bg-[#1AB16A] p-4 text-black font-bold text-2xl text-center mb-4">JUNKXPRESS Dashboard</header>
+      <header className="bg-[#1AB16A] p-4 text-black font-bold text-2xl text-center mb-4">Capital CleanOuts Dashboard</header>
       <nav className="flex flex-wrap gap-2 justify-center mb-4">
+        <Button variant={activeSection === 'jobs' ? 'default' : 'neon-green'} onClick={()=>setActiveSection('jobs')}>Cleaning Jobs</Button>
         <Button variant={activeSection === 'messages' ? 'default' : 'neon-green'} onClick={()=>setActiveSection('messages')}>Messages</Button>
-        <Button variant={activeSection === 'jobs' ? 'default' : 'neon-green'} onClick={()=>setActiveSection('jobs')}>Jobs</Button>
         <Button variant={activeSection === 'customers' ? 'default' : 'neon-green'} onClick={()=>setActiveSection('customers')}>Customers</Button>
-        <Button variant={activeSection === 'stats' ? 'default' : 'neon-green'} onClick={()=>setActiveSection('stats')}>Stats</Button>
+        <Button variant={activeSection === 'stats' ? 'default' : 'neon-green'} onClick={()=>setActiveSection('stats')}>Job Overview</Button>
       </nav>
 
       <main>
         {activeSection==='messages' && <MessagesSection messages={messages} setMessages={setMessages} />}
         {activeSection==='jobs' && <JobsSection jobs={jobs} setJobs={setJobs} />}
         {activeSection==='customers' && <CustomersSection customers={customers} />}
-        {activeSection==='stats' && <StatsSection jobs={jobs} />}
+        {activeSection==='stats' && <StatsSection jobs={jobs} setJobs={setJobs} />}
       </main>
     </div>
   );
@@ -160,39 +178,56 @@ function MessagesSection({messages,setMessages}:{messages:Message[],setMessages:
 }
 
 function JobsSection({jobs,setJobs}:{jobs:Job[],setJobs:React.Dispatch<React.SetStateAction<Job[]>>}){
+  const activeJobs = jobs.filter(j => j.status !== 'Completed');
+
   const deleteJob=(id:string)=>setJobs(jobs.filter(j=>j.id!==id));
-  const completeJob=(id:string)=>setJobs(jobs.map(j=>j.id===id?{...j, status: 'Completed'}:j));
+  const updateJobStatus = (id: string, status: 'Pending' | 'Scheduled' | 'Completed') => {
+    setJobs(jobs.map(j => j.id === id ? { ...j, status } : j));
+  };
+  
 
   const exportCSV = () => {
-    let csv = 'Client,Phone,Address,Status,Date,Volume,Price\n';
-    jobs.forEach(j => csv += `${j.clientName},${j.clientPhone},"${j.address}",${j.status},${j.date},${j.junkVolume || ''},${j.price || ''}\n`);
+    let csv = 'Job Type,Property Type,Bedrooms,Bathrooms,Client Name,Address,Date,Status\n';
+    activeJobs.forEach(j => csv += `${j.serviceType},${j.propertyType},${j.bedrooms},${j.bathrooms},${j.clientName},"${j.address}",${j.date},${j.status}\n`);
     const a = document.createElement('a');
     a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-    a.download = 'jobs.csv';
+    a.download = 'active_jobs.csv';
     a.click();
   }
 
   return (
     <div>
        <div className="flex justify-between items-center mb-2">
-        <h2 className="text-xl font-bold">Jobs</h2>
+        <h2 className="text-xl font-bold">Active Cleaning Jobs ({activeJobs.length})</h2>
         <Button onClick={exportCSV} variant="outline" size="sm">Export CSV</Button>
       </div>
-      {jobs.map(j=>(
+      {activeJobs.map(j=>(
         <Card key={j.id} className="mb-2 bg-[#151515] border-l-4 border-[#1AB16A]">
-          <CardContent className="p-3 text-sm space-y-1">
-            <p><strong>Client:</strong> {j.clientName}</p>
-            <p><strong>Phone:</strong> {j.clientPhone}</p>
-            <p><strong>Address:</strong> {j.address}</p>
-            <p><strong>Status:</strong> {j.status}</p>
-            <p><strong>Date:</strong> {j.date}</p>
-            {j.junkVolume && <p><strong>Volume:</strong> {j.junkVolume}</p>}
-            {j.price && <p><strong>Est. Price:</strong> {j.price}</p>}
-            {j.photo && <Image src={j.photo} alt="Job photo" width={100} height={100} className="rounded-md mt-2" />}
+          <CardContent className="p-4 space-y-2 text-sm">
+            <div className="flex justify-between items-start">
+              <div>
+                <p><strong>Client:</strong> {j.clientName} ({j.clientPhone})</p>
+                <p><strong>Address:</strong> {j.address}</p>
+                <p><strong>Email:</strong> {j.email}</p>
+              </div>
+              <div className="text-right">
+                <p><strong>Status:</strong> {j.status}</p>
+                <p><strong>Date:</strong> {j.date}</p>
+              </div>
+            </div>
+            <div className='bg-card p-3 rounded-md mt-2'>
+              <p><strong>Job:</strong> {j.serviceType} ({j.propertyType})</p>
+              <p><strong>Size:</strong> {j.bedrooms} Bed, {j.bathrooms} Bath</p>
+              {j.notes && <p><strong>Notes:</strong> {j.notes}</p>}
+            </div>
             <div className="flex gap-2 mt-2">
-              {j.status !== 'Completed' && (
-                <Button size="sm" variant="neon-green" onClick={()=>completeJob(j.id)}>Complete</Button>
+              {j.status === 'Pending' && (
+                <Button size="sm" variant="outline" onClick={()=>updateJobStatus(j.id, 'Scheduled')}>Mark Scheduled</Button>
               )}
+               {j.status === 'Scheduled' && (
+                <Button size="sm" variant="outline" onClick={()=>updateJobStatus(j.id, 'Pending')}>Mark Pending</Button>
+              )}
+              <Button size="sm" variant="neon-green" onClick={()=>updateJobStatus(j.id, 'Completed')}>Complete</Button>
               <Button size="sm" variant="destructive" onClick={()=>deleteJob(j.id)}>Delete</Button>
             </div>
           </CardContent>
@@ -231,13 +266,17 @@ function CustomersSection({ customers }: { customers: Customer[] }) {
     );
 }
 
-function StatsSection({ jobs }: { jobs: Job[] }) {
+function StatsSection({ jobs, setJobs }: { jobs: Job[], setJobs: React.Dispatch<React.SetStateAction<Job[]>>}) {
     const totalJobs = jobs.length;
     const completedJobs = jobs.filter(j => j.status === 'Completed').length;
     const pendingJobs = jobs.filter(j => j.status === 'Pending').length;
-    const inProgressJobs = jobs.filter(j => j.status === 'In Progress').length;
+    const scheduledJobs = jobs.filter(j => j.status === 'Scheduled').length;
     
     const completedJobsData = jobs.filter(j => j.status === 'Completed');
+
+    const updateJobStatus = (id: string, status: 'Pending' | 'Scheduled' | 'Completed') => {
+        setJobs(jobs.map(j => j.id === id ? { ...j, status } : j));
+    };
 
     const StatCard = ({ title, value }: { title: string, value: number | string }) => (
         <div className="flex-1 bg-[#151515] p-4 rounded-lg text-center border-l-4 border-[#1AB16A]">
@@ -248,24 +287,35 @@ function StatsSection({ jobs }: { jobs: Job[] }) {
 
     return (
       <div>
-        <h2 className="text-xl font-bold mb-2">Stats</h2>
+        <h2 className="text-xl font-bold mb-2">Job Overview</h2>
         <div className="flex flex-col md:flex-row gap-4 mb-4">
             <StatCard title="Total Jobs" value={totalJobs} />
             <StatCard title="Completed Jobs" value={completedJobs} />
-            <StatCard title="Pending/In Progress" value={pendingJobs + inProgressJobs} />
+            <StatCard title="Pending" value={pendingJobs} />
+            <StatCard title="Scheduled" value={scheduledJobs} />
         </div>
 
         <h3 className="text-lg font-bold mt-6 mb-2">Completed Jobs Details</h3>
         {completedJobsData.map(j=>(
         <Card key={j.id} className="mb-2 bg-[#151515] border-l-4 border-green-500">
-          <CardContent className="p-3 text-sm space-y-1">
-            <p><strong>Client:</strong> {j.clientName}</p>
-            <p><strong>Phone:</strong> {j.clientPhone}</p>
-            <p><strong>Address:</strong> {j.address}</p>
-            <p><strong>Status:</strong> {j.status}</p>
-            <p><strong>Date:</strong> {j.date}</p>
-            {j.junkVolume && <p><strong>Volume:</strong> {j.junkVolume}</p>}
-            {j.price && <p><strong>Est. Price:</strong> {j.price}</p>}
+          <CardContent className="p-4 space-y-2 text-sm">
+             <div className="flex justify-between items-start">
+              <div>
+                <p><strong>Client:</strong> {j.clientName} ({j.clientPhone})</p>
+                <p><strong>Address:</strong> {j.address}</p>
+              </div>
+              <div className="text-right">
+                <p><strong>Status:</strong> {j.status}</p>
+                <p><strong>Date:</strong> {j.date}</p>
+              </div>
+            </div>
+            <div className='bg-card p-3 rounded-md mt-2'>
+              <p><strong>Job:</strong> {j.serviceType} ({j.propertyType})</p>
+              <p><strong>Size:</strong> {j.bedrooms} Bed, {j.bathrooms} Bath</p>
+            </div>
+            <div className="flex gap-2 mt-2">
+              <Button size="sm" variant="outline" onClick={()=>updateJobStatus(j.id, 'Pending')}>Uncomplete</Button>
+            </div>
           </CardContent>
         </Card>
       ))}
@@ -273,6 +323,3 @@ function StatsSection({ jobs }: { jobs: Job[] }) {
       </div>
     );
 }
-    
-
-    

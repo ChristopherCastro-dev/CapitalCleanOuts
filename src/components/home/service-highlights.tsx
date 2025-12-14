@@ -1,26 +1,26 @@
-import { Clock, ShieldCheck, Recycle, Users } from "lucide-react";
+import { CalendarClock, BadgeDollarSign, School, Star } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const highlights = [
   {
-    icon: <Clock className="h-8 w-8 text-primary" />,
-    title: "Same-Day Service",
-    description: "Need it gone now? We offer same-day and next-day appointments to fit your schedule.",
+    icon: <CalendarClock className="h-8 w-8 text-primary" />,
+    title: "Same-Week Availability",
+    description: "Need a cleaning soon? We offer flexible scheduling to fit your tight timelines.",
   },
   {
-    icon: <ShieldCheck className="h-8 w-8 text-primary" />,
-    title: "Licensed & Insured",
-    description: "Our professional crew is fully licensed and insured for your peace of mind.",
+    icon: <BadgeDollarSign className="h-8 w-8 text-primary" />,
+    title: "Flat-Rate Pricing",
+    description: "No surprises. Know the cost of your cleaning upfront with our simple, flat-rate pricing.",
   },
   {
-    icon: <Users className="h-8 w-8 text-primary" />,
-    title: "Professional Crew",
-    description: "Our friendly, uniformed team will handle all the heavy lifting with a smile.",
+    icon: <School className="h-8 w-8 text-primary" />,
+    title: "Student & Rental Specialists",
+    description: "We specialize in move-out cleanings for students and rental properties to help you get your deposit back.",
   },
   {
-    icon: <Recycle className="h-8 w-8 text-primary" />,
-    title: "Eco-Friendly Disposal",
-    description: "We donate and recycle up to 70% of the items we collect, keeping them out of landfills.",
+    icon: <Star className="h-8 w-8 text-primary" />,
+    title: "Trusted Local Service",
+    description: "We're a local Tallahassee business committed to providing a reliable, high-quality clean every time.",
   },
 ];
 

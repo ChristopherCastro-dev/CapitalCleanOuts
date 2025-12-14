@@ -13,7 +13,7 @@ export default function Team() {
               Meet the Team
             </h2>
             <p className="mx-auto max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-              The friendly faces behind JUNKXPRESS, dedicated to making your life easier.
+              The friendly faces behind Capital CleanOuts, dedicated to making your space shine.
             </p>
           </div>
         </div>
