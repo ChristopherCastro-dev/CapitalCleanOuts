@@ -48,7 +48,7 @@ export default function AdminDashboardPage() {
     return (
       <div className="flex min-h-[60vh] items-center justify-center bg-background p-4">
         <div className="w-full max-w-md rounded-xl border bg-card p-8 shadow-sm text-center">
-          <h1 className="mb-6 font-headline text-3xl font-bold text-primary">Admin Dashboard</h1>
+          <h1 className="font-headline text-3xl font-bold text-primary">Admin Dashboard</h1>
           <Input 
             type="password" 
             value={password} 
@@ -337,3 +337,5 @@ function StatsSection({ allJobs, completedJobs }: { allJobs: Job[], completedJob
       </div>
     );
 }
+
+    
