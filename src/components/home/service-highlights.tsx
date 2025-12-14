@@ -30,7 +30,7 @@ export default function ServiceHighlights() {
       <div className="container px-4 md:px-6">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {highlights.map((highlight) => (
-            <Card key={highlight.title} className="flex flex-col items-center text-center p-6 border-0 bg-transparent shadow-none md:border md:bg-card md:shadow-sm">
+            <Card key={highlight.title} className="flex flex-col items-center text-center p-6 bg-card shadow-sm">
               <CardHeader className="p-0">
                 {highlight.icon}
               </CardHeader>

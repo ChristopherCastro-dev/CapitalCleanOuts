@@ -10,7 +10,7 @@ export function FloatingButtons() {
           <Phone className="h-6 w-6" />
         </a>
       </Button>
-      <Button asChild size="icon" className="rounded-full h-14 w-14 bg-[#25D366] hover:bg-[#128C7E] text-white shadow-lg">
+      <Button asChild size="icon" className="rounded-full h-14 w-14 bg-green-600 hover:bg-green-700 text-white shadow-lg">
         <a href={contactDetails.whatsappLink} target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
           <MessageSquare className="h-6 w-6" />
         </a>

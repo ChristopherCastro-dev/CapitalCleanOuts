@@ -46,7 +46,7 @@ export default function AdminDashboardPage() {
   if(!isAuthenticated){
     return (
       <div className="flex min-h-[60vh] items-center justify-center bg-background p-4">
-        <div className="w-full max-w-md rounded-lg border bg-card p-8 shadow-lg text-center">
+        <div className="w-full max-w-md rounded-xl border bg-card p-8 shadow-sm text-center">
           <h1 className="mb-6 font-headline text-3xl font-bold text-primary">Admin Dashboard</h1>
           <Input 
             type="password" 
@@ -54,7 +54,7 @@ export default function AdminDashboardPage() {
             onChange={e=>setPassword(e.target.value)} 
             onKeyPress={handleKeyPress}
             placeholder="Password" 
-            className="bg-input text-center text-lg"
+            className="text-center text-lg"
           />
           <Button onClick={handleLogin} className="mt-4 w-full">Enter</Button>
         </div>
@@ -118,7 +118,9 @@ function AdminDashboard(){
 
   return (
     <div className="min-h-screen bg-background text-foreground p-4">
-      <header className="bg-primary p-4 text-primary-foreground font-bold text-2xl text-center mb-4">Capital CleanOuts Dashboard</header>
+      <header className="bg-card border-b p-4 text-primary-foreground font-bold text-2xl text-center mb-4">
+        <h1 className="font-headline text-2xl text-center font-bold text-foreground">Capital CleanOuts Dashboard</h1>
+      </header>
       <nav className="flex flex-wrap gap-2 justify-center mb-4">
         <Button variant={activeSection === 'jobs' ? 'default' : 'outline'} onClick={()=>setActiveSection('jobs')}>Cleaning Jobs</Button>
         <Button variant={activeSection === 'messages' ? 'default' : 'outline'} onClick={()=>setActiveSection('messages')}>Messages</Button>
@@ -159,7 +161,7 @@ function MessagesSection({messages,setMessages}:{messages:Message[],setMessages:
         <Button onClick={exportCSV} variant="outline" size="sm">Export CSV</Button>
       </div>
       {messages.map(m=>(
-        <Card key={m.id} className={`mb-2 border-l-4 bg-card border-primary ${m.read?'opacity-60':''}`}>
+        <Card key={m.id} className={`mb-2 ${m.read?'opacity-60':''}`}>
           <CardContent className="p-3 text-sm space-y-1">
             <p><strong>Name:</strong> {m.name}</p>
             <p><strong>Email:</strong> {m.email}</p>
@@ -167,7 +169,7 @@ function MessagesSection({messages,setMessages}:{messages:Message[],setMessages:
             <p><strong>Message:</strong> {m.message}</p>
             <p className="text-xs text-muted-foreground"><strong>Date:</strong> {new Date(m.timestamp).toLocaleString()}</p>
             <div className="flex gap-2 mt-2">
-              <Button size="sm" onClick={()=>toggleRead(m.id)}>{m.read?'Mark Unread':'Mark Read'}</Button>
+              <Button size="sm" variant="secondary" onClick={()=>toggleRead(m.id)}>{m.read?'Mark Unread':'Mark Read'}</Button>
               <Button size="sm" variant="destructive" onClick={()=>deleteMsg(m.id)}>Delete</Button>
             </div>
           </CardContent>
@@ -202,7 +204,7 @@ function JobsSection({jobs,setJobs}:{jobs:Job[],setJobs:React.Dispatch<React.Set
         <Button onClick={exportCSV} variant="outline" size="sm">Export CSV</Button>
       </div>
       {activeJobs.map(j=>(
-        <Card key={j.id} className="mb-2 bg-card border-l-4 border-primary">
+        <Card key={j.id} className="mb-2">
           <CardContent className="p-4 space-y-2 text-sm">
             <div className="flex justify-between items-start">
               <div>
@@ -222,10 +224,10 @@ function JobsSection({jobs,setJobs}:{jobs:Job[],setJobs:React.Dispatch<React.Set
             </div>
             <div className="flex gap-2 mt-2">
               {j.status === 'Pending' && (
-                <Button size="sm" variant="outline" onClick={()=>updateJobStatus(j.id, 'Scheduled')}>Mark Scheduled</Button>
+                <Button size="sm" variant="secondary" onClick={()=>updateJobStatus(j.id, 'Scheduled')}>Mark Scheduled</Button>
               )}
                {j.status === 'Scheduled' && (
-                <Button size="sm" variant="outline" onClick={()=>updateJobStatus(j.id, 'Pending')}>Mark Pending</Button>
+                <Button size="sm" variant="secondary" onClick={()=>updateJobStatus(j.id, 'Pending')}>Mark Pending</Button>
               )}
               <Button size="sm" variant="default" onClick={()=>updateJobStatus(j.id, 'Completed')}>Complete</Button>
               <Button size="sm" variant="destructive" onClick={()=>deleteJob(j.id)}>Delete</Button>
@@ -254,7 +256,7 @@ function CustomersSection({ customers }: { customers: Customer[] }) {
                 <Button onClick={exportCSV} variant="outline" size="sm">Export CSV</Button>
             </div>
             {customers.map(cust => (
-                <Card key={cust.email} className="mb-2 bg-card border-l-4 border-primary">
+                <Card key={cust.email} className="mb-2">
                     <CardContent className="p-3 text-sm space-y-1">
                         <p><strong>Name:</strong> {cust.name}</p>
                         <p><strong>Email:</strong> {cust.email}</p>
@@ -279,7 +281,7 @@ function StatsSection({ jobs, setJobs }: { jobs: Job[], setJobs: React.Dispatch<
     };
 
     const StatCard = ({ title, value }: { title: string, value: number | string }) => (
-        <div className="flex-1 bg-card p-4 rounded-lg text-center border-l-4 border-primary">
+        <div className="flex-1 bg-card p-4 rounded-xl text-center border">
             <span className="text-xl font-bold">{title}</span>
             <p className="text-3xl font-bold">{value}</p>
         </div>
@@ -297,7 +299,7 @@ function StatsSection({ jobs, setJobs }: { jobs: Job[], setJobs: React.Dispatch<
 
         <h3 className="text-lg font-bold mt-6 mb-2">Completed Jobs Details</h3>
         {completedJobsData.map(j=>(
-        <Card key={j.id} className="mb-2 bg-card border-l-4 border-green-500">
+        <Card key={j.id} className="mb-2">
           <CardContent className="p-4 space-y-2 text-sm">
              <div className="flex justify-between items-start">
               <div>
@@ -314,7 +316,7 @@ function StatsSection({ jobs, setJobs }: { jobs: Job[], setJobs: React.Dispatch<
               <p><strong>Size:</strong> {j.bedrooms} Bed, {j.bathrooms} Bath</p>
             </div>
             <div className="flex gap-2 mt-2">
-              <Button size="sm" variant="outline" onClick={()=>updateJobStatus(j.id, 'Pending')}>Uncomplete</Button>
+              <Button size="sm" variant="secondary" onClick={()=>updateJobStatus(j.id, 'Pending')}>Uncomplete</Button>
             </div>
           </CardContent>
         </Card>

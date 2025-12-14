@@ -11,8 +11,8 @@ export default function ServicesGrid() {
   return (
     <Accordion type="single" collapsible className="w-full space-y-4">
       {services.map((service, index) => (
-        <AccordionItem key={service.title} value={`item-${index}`} className="border-b-0">
-          <AccordionTrigger className="rounded-lg bg-card p-6 text-left hover:no-underline hover:bg-muted/50 data-[state=open]:rounded-b-none data-[state=open]:bg-muted/50">
+        <AccordionItem key={service.title} value={`item-${index}`} className="border-b-0 rounded-lg bg-card">
+          <AccordionTrigger className="p-6 text-left hover:no-underline data-[state=open]:rounded-b-none">
             <div className="flex items-center gap-4">
               <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 {service.icon}
@@ -23,7 +23,7 @@ export default function ServicesGrid() {
               </div>
             </div>
           </AccordionTrigger>
-          <AccordionContent className="space-y-4 rounded-b-lg bg-card p-6">
+          <AccordionContent className="space-y-4 p-6 pt-0">
             <p className="text-muted-foreground">{service.longDescription}</p>
             <div>
                 <h4 className="font-semibold mb-2">Example Pricing:</h4>

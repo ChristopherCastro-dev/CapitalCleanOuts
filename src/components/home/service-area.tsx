@@ -5,7 +5,7 @@ const serviceLocations = ["Tallahassee", "Florida State University (FSU)", "Flor
 
 export default function ServiceArea() {
   return (
-    <section className="bg-muted/30">
+    <section className="bg-card">
       <div className="container px-4 md:px-6">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="space-y-4">

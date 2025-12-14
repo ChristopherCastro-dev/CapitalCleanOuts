@@ -4,33 +4,73 @@
 
 @layer base {
   :root {
-    --background: 222 39% 11%; /* Dark Charcoal: #111827 */
-    --foreground: 0 0% 100%; /* White: #FFFFFF */
-    --card: 222 39% 14%; /* Slightly lighter charcoal */
-    --card-foreground: 0 0% 100%;
-    --popover: 222 39% 11%;
-    --popover-foreground: 0 0% 100%;
-    --primary: 172 70% 50%; /* Soft Aqua: #2DD4BF */
-    --primary-foreground: 222 39% 11%;
-    --secondary: 216 6% 65%; /* Accent Gray: #9CA3AF */
-    --secondary-foreground: 222 39% 11%;
-    --muted: 222 39% 17%;
-    --muted-foreground: 215 14% 65%; /* Muted version of accent gray */
-    --accent: 222 39% 17%;
-    --accent-foreground: 0 0% 100%;
+    --background: 240 6% 96%; /* #F9FAFB */
+    --foreground: 224 71% 4%; /* #0F172A */
+
+    --card: 0 0% 100%; /* #FFFFFF */
+    --card-foreground: 224 71% 4%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+
+    --primary: 172 65% 51%; /* #2DD4BF */
+    --primary-foreground: 224 71% 4%;
+
+    --secondary: 220 13% 91%; /* #E5E7EB */
+    --secondary-foreground: 224 71% 4%;
+
+    --muted: 220 13% 91%;
+    --muted-foreground: 220 9% 45%; /* #6B7280 */
+    
+    --accent: 220 13% 91%;
+    --accent-foreground: 224 71% 4%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 172 65% 51%;
+    --radius: 0.75rem;
+
+    --chart-1: 172 65% 51%;
+    --chart-2: 172 55% 61%;
+    --chart-3: 172 45% 71%;
+    --chart-4: 172 35% 81%;
+    --chart-5: 172 25% 91%;
+  }
+
+  .dark {
+    --background: 222 47% 11%; /* #111827 */
+    --foreground: 210 20% 98%; /* #F9FAFB */
+
+    --card: 222 39% 16%; /* #1F2937 */
+    --card-foreground: 210 20% 98%;
+
+    --popover: 222 47% 11%;
+    --popover-foreground: 210 20% 98%;
+
+    --primary: 172 65% 51%;
+    --primary-foreground: 222 47% 11%;
+    
+    --secondary: 222 39% 16%;
+    --secondary-foreground: 210 20% 98%;
+
+    --muted: 222 39% 16%;
+    --muted-foreground: 220 14% 65%;
+
+    --accent: 222 39% 16%;
+    --accent-foreground: 210 20% 98%;
+
     --destructive: 0 63% 31%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 222 39% 20%;
-    --input: 222 39% 20%;
-    --ring: 172 70% 50%;
-    --radius: 0.5rem;
-    --chart-1: 172 70% 50%;
-    --chart-2: 172 60% 65%;
-    --chart-3: 217 33% 50%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
+    --destructive-foreground: 210 20% 98%;
+
+    --border: 222 28% 25%; /* #374151 */
+    --input: 222 28% 25%;
+    --ring: 172 65% 51%;
   }
 }
+
 
 @layer base {
   * {
