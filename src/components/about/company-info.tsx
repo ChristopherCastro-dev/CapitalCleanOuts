@@ -1,6 +1,7 @@
 
 import { PlaceHolderImages } from "@/lib/placeholder-images";
 import Image from "next/image";
+import { ShieldCheck } from "lucide-react";
 
 const whyImage = PlaceHolderImages.find(img => img.id === 'about-us-team');
 
@@ -20,6 +21,15 @@ export default function CompanyInfo() {
               <h2 className="font-headline text-2xl font-bold tracking-tighter sm:text-3xl">Our Mission</h2>
               <p className="text-muted-foreground">
                 Capital CleanOuts provides reliable, flat-rate cleaning services for renters, homeowners, and property managers in Tallahassee. Our mission is to deliver a spotless space, on time, every time, helping our clients pass inspections and enjoy a fresh start.
+              </p>
+            </div>
+             <div className="space-y-4 pt-4">
+              <h2 className="font-headline text-2xl font-bold tracking-tighter sm:text-3xl flex items-center gap-2">
+                <ShieldCheck className="h-7 w-7 text-primary" />
+                Commitment to Safety
+              </h2>
+              <p className="text-muted-foreground">
+                For our restaurant and commercial clients, our team is Food Handler Safety Certified. This training ensures we understand the requirements for food-safe environments, allowing us to deliver a professional clean you can depend on.
               </p>
             </div>
           </div>

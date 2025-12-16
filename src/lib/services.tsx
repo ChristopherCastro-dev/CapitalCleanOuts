@@ -1,4 +1,4 @@
-import { Building, Sparkles, KeyRound, Briefcase } from 'lucide-react';
+import { Building, Sparkles, KeyRound, Briefcase, UtensilsCrossed } from 'lucide-react';
 
 export const services = [
   {
@@ -39,6 +39,16 @@ export const services = [
     pricingExamples: [
       { item: "Weekly", price: "Contact Us" },
       { item: "Bi-Weekly", price: "Contact Us" },
+    ],
+  },
+  {
+    icon: <UtensilsCrossed className="h-6 w-6" />,
+    title: "Restaurant & Food-Service Detailing",
+    shortDescription: "Inspection-ready cleaning for kitchens.",
+    longDescription: "Specialized deep cleaning for restaurants and commercial kitchens. Our team is Food Handler Safety Certified and trained in food-safe cleaning practices to deliver an inspection-ready result. We focus on reliability and transparent, flat-rate pricing.",
+    pricingExamples: [
+      { item: "Kitchen Detailing", price: "Request Quote" },
+      { item: "Contract Cleaning", price: "Call for Quote" },
     ],
   },
 ];
